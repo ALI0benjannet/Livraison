@@ -1,0 +1,16 @@
+@model IEnumerable<Colis>
+@{
+    var s = ViewBag.Search as ColisSearchViewModel;
+}
+<h2>Recherche colis</h2>
+<form method="get" class="row g-2 mb-3">
+    <div class="col"><input class="form-control" name="PrixMin" value="@s?.PrixMin" placeholder="Prix min"/></div>
+    <div class="col"><input class="form-control" name="PrixMax" value="@s?.PrixMax" placeholder="Prix max"/></div>
+    <div class="col"><input class="form-control" name="DateLivraison" value="@s?.DateLivraison?.ToString("yyyy-MM-dd")" type="date"/></div>
+    <div class="col"><input class="form-control" name="Ville" value="@s?.Ville" placeholder="Ville"/></div>
+    <div class="col"><input class="form-control" name="Livreur" value="@s?.Livreur" placeholder="CIN Livreur"/></div>
+    <div class="col"><button class="btn btn-primary">Filtrer</button></div>
+</form>
+<table class="table table-striped"><thead><tr><th>Date</th><th>Montant</th><th>Ville</th><th></th></tr></thead><tbody>
+@foreach(var c in Model){<tr><td>@c.DateLivraison.ToShortDateString()</td><td>@c.Montant</td><td>@c.Client?.Ville</td><td><a asp-action="Details" asp-route-id="@c.Id">Details</a></td></tr>}
+</tbody></table>

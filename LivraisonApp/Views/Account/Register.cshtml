@@ -1,0 +1,25 @@
+@model RegisterViewModel
+@{
+    ViewData["Title"] = "Inscription";
+}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="mb-3">Inscription</h3>
+                <form asp-action="Register" method="post">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="mb-3"><label asp-for="Login" class="form-label"></label><input asp-for="Login" class="form-control" /></div>
+                    <div class="mb-3"><label asp-for="Password" class="form-label"></label><input asp-for="Password" class="form-control" /></div>
+                    <div class="mb-3"><label asp-for="ConfirmPassword" class="form-label"></label><input asp-for="ConfirmPassword" class="form-control" /></div>
+                    <div class="mb-3">
+                        <label asp-for="Role" class="form-label"></label>
+                        <select asp-for="Role" class="form-select"><option>Admin</option><option selected>User</option></select>
+                    </div>
+                    <button class="btn btn-primary w-100">S'inscrire</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

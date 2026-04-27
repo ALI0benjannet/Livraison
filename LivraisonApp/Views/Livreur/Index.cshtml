@@ -1,0 +1,6 @@
+@model IEnumerable<Livreur>
+<h2>Livreurs</h2>
+<a class="btn btn-primary mb-2" asp-action="Create">Nouveau</a>
+<table class="table table-striped"><thead><tr><th>CIN</th><th>Ville</th><th>Vehicule</th><th></th></tr></thead><tbody>
+@foreach(var l in Model){<tr><td>@l.CIN</td><td>@l.Ville</td><td>@l.Vehicule?.Matricule</td><td><a asp-action="Details" asp-route-id="@l.Id">Details</a> | <a asp-action="Edit" asp-route-id="@l.Id">Edit</a> | <a asp-action="Delete" asp-route-id="@l.Id">Delete</a></td></tr>}
+</tbody></table>

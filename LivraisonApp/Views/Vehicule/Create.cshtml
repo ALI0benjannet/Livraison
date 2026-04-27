@@ -1,0 +1,12 @@
+<h2>Nouveau vehicule</h2>
+<form asp-action="Create" method="post">
+<div class="mb-2"><label>Type</label><select name="type" class="form-select"><option value="Camion">Camion</option><option value="Voiture">Voiture</option></select></div>
+<div class="mb-2"><label>Couleur</label><input name="Couleur" class="form-control"/></div>
+<div class="mb-2"><label>Marque</label><input name="Marque" class="form-control"/></div>
+<div class="mb-2"><label>Matricule</label><input name="Matricule" class="form-control"/></div>
+<div class="mb-2"><label>VitesseLimite</label><input name="VitesseLimite" class="form-control"/></div>
+<div class="mb-2"><label>Capacite (camion)</label><input name="Capacite" class="form-control"/></div>
+<div class="mb-2"><label>NbrEssieux (camion)</label><input name="NbrEssieux" class="form-control"/></div>
+<div class="mb-2"><label>NbrPlaces (voiture)</label><input name="NbrPlaces" class="form-control"/></div>
+<button class="btn btn-primary">Enregistrer</button>
+</form>

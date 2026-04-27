@@ -1,0 +1,15 @@
+@model IEnumerable<Colis>
+<div class="d-flex justify-content-between mb-2">
+    <h2>Colis</h2>
+    @if (User.IsInRole("Admin")) { <a class="btn btn-primary" asp-action="Create">Nouveau</a> }
+</div>
+<table class="table table-striped" id="dataTable">
+    <thead><tr><th>Id</th><th>Date</th><th>Montant</th><th>Client</th><th>Livreur</th><th></th></tr></thead>
+    <tbody>
+    @foreach (var item in Model) {
+        <tr><td>@item.Id</td><td>@item.DateLivraison.ToShortDateString()</td><td>@item.Montant</td><td>@item.Client?.Nom</td><td>@item.Livreur?.CIN</td>
+            <td><a asp-action="Details" asp-route-id="@item.Id">Details</a> @if (User.IsInRole("Admin")) {<text>| <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> | <a asp-action="Delete" asp-route-id="@item.Id">Delete</a></text>}</td></tr>
+    }
+    </tbody>
+</table>
+@section Scripts { <script>new DataTable('#dataTable');</script> }

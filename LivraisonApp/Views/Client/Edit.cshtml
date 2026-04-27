@@ -1,0 +1,10 @@
+@model Client
+<h2>Modifier client</h2>
+<form asp-action="Edit" method="post">
+<input type="hidden" asp-for="Id"/>
+<div class="mb-2"><label asp-for="Nom"></label><input asp-for="Nom" class="form-control"/></div>
+<div class="mb-2"><label asp-for="Prenom"></label><input asp-for="Prenom" class="form-control"/></div>
+<div class="mb-2"><label asp-for="Ville"></label><input asp-for="Ville" class="form-control"/></div>
+<div class="mb-2"><label asp-for="CodePostal"></label><input asp-for="CodePostal" class="form-control"/></div>
+<button class="btn btn-primary">Mettre a jour</button>
+</form>

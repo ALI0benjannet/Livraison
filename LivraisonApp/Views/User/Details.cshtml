@@ -1,0 +1,6 @@
+@model Colis
+<h2>Detail colis</h2>
+<p><b>Date:</b> @Model?.DateLivraison</p>
+<p><b>Montant:</b> @Model?.Montant</p>
+<p><b>Client:</b> @Model?.Client?.Nom</p>
+<p><b>Livreur:</b> @Model?.Livreur?.CIN</p>

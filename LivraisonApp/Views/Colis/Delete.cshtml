@@ -1,0 +1,7 @@
+@model Colis
+<h2>Supprimer colis</h2>
+<p>Confirmer la suppression du colis #@Model?.Id ?</p>
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button class="btn btn-danger">Supprimer</button>
+</form>

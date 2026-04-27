@@ -1,0 +1,9 @@
+@model Livreur
+<h2>Nouveau livreur</h2>
+<form asp-action="Create" method="post">
+<div class="mb-2"><label asp-for="CIN"></label><input asp-for="CIN" class="form-control"/></div>
+<div class="mb-2"><label asp-for="RaisonSocial"></label><input asp-for="RaisonSocial" class="form-control"/></div>
+<div class="mb-2"><label asp-for="Ville"></label><input asp-for="Ville" class="form-control"/></div>
+<div class="mb-2"><label asp-for="VehiculeId"></label><select asp-for="VehiculeId" asp-items="ViewBag.VehiculeId" class="form-select"></select></div>
+<button class="btn btn-primary">Enregistrer</button>
+</form>

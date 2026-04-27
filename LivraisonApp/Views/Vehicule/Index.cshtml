@@ -1,0 +1,6 @@
+@model IEnumerable<Vehicule>
+<h2>Vehicules</h2>
+<a class="btn btn-primary mb-2" asp-action="Create">Nouveau</a>
+<table class="table table-striped"><thead><tr><th>Type</th><th>Marque</th><th>Matricule</th><th></th></tr></thead><tbody>
+@foreach(var v in Model){<tr><td>@v.GetType().Name</td><td>@v.Marque</td><td>@v.Matricule</td><td><a asp-action="Details" asp-route-id="@v.Id">Details</a> | <a asp-action="Edit" asp-route-id="@v.Id">Edit</a> | <a asp-action="Delete" asp-route-id="@v.Id">Delete</a></td></tr>}
+</tbody></table>

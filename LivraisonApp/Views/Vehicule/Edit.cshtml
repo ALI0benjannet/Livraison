@@ -1,0 +1,11 @@
+@model Vehicule
+<h2>Modifier vehicule</h2>
+<form asp-action="Edit" method="post">
+<input type="hidden" name="Id" value="@Model?.Id"/>
+<div class="mb-2"><label>Type</label><select name="type" class="form-select"><option value="Camion">Camion</option><option value="Voiture">Voiture</option></select></div>
+<div class="mb-2"><label>Couleur</label><input name="Couleur" value="@Model?.Couleur" class="form-control"/></div>
+<div class="mb-2"><label>Marque</label><input name="Marque" value="@Model?.Marque" class="form-control"/></div>
+<div class="mb-2"><label>Matricule</label><input name="Matricule" value="@Model?.Matricule" class="form-control"/></div>
+<div class="mb-2"><label>VitesseLimite</label><input name="VitesseLimite" value="@Model?.VitesseLimite" class="form-control"/></div>
+<button class="btn btn-primary">Mettre a jour</button>
+</form>

@@ -1,0 +1,31 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<h2 class="mb-3">Tableau de bord</h2>
+<div class="row g-3 mb-4">
+    <div class="col-md-3"><div class="card"><div class="card-body"><h6>Total Colis</h6><h3>@Model.TotalColis</h3></div></div></div>
+    <div class="col-md-3"><div class="card"><div class="card-body"><h6>Total Clients</h6><h3>@Model.TotalClients</h3></div></div></div>
+    <div class="col-md-3"><div class="card"><div class="card-body"><h6>Total Livreurs</h6><h3>@Model.TotalLivreurs</h3></div></div></div>
+    <div class="col-md-3"><div class="card"><div class="card-body"><h6>Total Vehicules</h6><h3>@Model.TotalVehicules</h3></div></div></div>
+</div>
+<div class="row g-3">
+    <div class="col-md-6"><canvas id="barColis"></canvas></div>
+    <div class="col-md-6"><canvas id="pieVehicules"></canvas></div>
+    <div class="col-md-12"><canvas id="lineRevenue"></canvas></div>
+</div>
+<h4 class="mt-4">Top 5 clients</h4>
+<table class="table table-striped" id="topClientsTable"><thead><tr><th>Client</th><th>Nb Colis</th></tr></thead><tbody></tbody></table>
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+fetch('/Dashboard/Stats').then(r=>r.json()).then(d=>{
+ const labels=d.colisByMonth.map(x=>x.label), totals=d.colisByMonth.map(x=>x.total), revenue=d.colisByMonth.map(x=>x.revenue);
+ new Chart(document.getElementById('barColis'),{type:'bar',data:{labels,datasets:[{label:'Colis/mois',data:totals,backgroundColor:'#0d6efd'}]}});
+ new Chart(document.getElementById('pieVehicules'),{type:'pie',data:{labels:['Camions','Voitures'],datasets:[{data:[d.camions,d.voitures]}]}});
+ new Chart(document.getElementById('lineRevenue'),{type:'line',data:{labels,datasets:[{label:'Montant total',data:revenue,borderColor:'#0d6efd'}]}});
+ const body=document.querySelector('#topClientsTable tbody');
+ d.topClients.forEach(x=>body.innerHTML += `<tr><td>${x.client}</td><td>${x.total}</td></tr>`);
+});
+</script>
+}

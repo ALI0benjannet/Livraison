@@ -1,0 +1,9 @@
+@model Client
+<h2>Nouveau client</h2>
+<form asp-action="Create" method="post">
+<div class="mb-2"><label asp-for="Nom"></label><input asp-for="Nom" class="form-control"/></div>
+<div class="mb-2"><label asp-for="Prenom"></label><input asp-for="Prenom" class="form-control"/></div>
+<div class="mb-2"><label asp-for="Ville"></label><input asp-for="Ville" class="form-control"/></div>
+<div class="mb-2"><label asp-for="CodePostal"></label><input asp-for="CodePostal" class="form-control"/></div>
+<button class="btn btn-primary">Enregistrer</button>
+</form>

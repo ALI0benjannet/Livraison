@@ -1,0 +1,8 @@
+@model Colis
+<h2>Details colis</h2>
+<dl class="row">
+    <dt class="col-sm-2">Date</dt><dd class="col-sm-10">@Model?.DateLivraison</dd>
+    <dt class="col-sm-2">Montant</dt><dd class="col-sm-10">@Model?.Montant</dd>
+    <dt class="col-sm-2">Client</dt><dd class="col-sm-10">@Model?.Client?.Nom</dd>
+    <dt class="col-sm-2">Livreur</dt><dd class="col-sm-10">@Model?.Livreur?.CIN</dd>
+</dl>
