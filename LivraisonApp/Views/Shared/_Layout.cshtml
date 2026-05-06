@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@inject LivraisonApp.Data.AppDbContext _db
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="utf-8" />
@@ -8,54 +9,205 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/LivraisonApp.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header class="navbar navbar-dark bg-primary px-3">
-        <a class="navbar-brand" asp-controller="Dashboard" asp-action="Index"><i class="bi bi-truck"></i> LivraisonApp</a>
-        <div class="text-white d-flex align-items-center gap-3">
-            @if (User.Identity?.IsAuthenticated == true)
+@{
+    var isAuth  = User.Identity?.IsAuthenticated == true;
+    var isAdmin = User.IsInRole("Admin");
+    var ctrl    = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var act     = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+    int colisCount = 0, clientCount = 0, livreurCount = 0, vehiculeCount = 0, userCount = 0;
+    int pendingCount = 0;
+    if (isAuth && isAdmin)
+    {
+        colisCount    = await _db.Colis.CountAsync();
+        clientCount   = await _db.Clients.CountAsync();
+        livreurCount  = await _db.Livreurs.CountAsync();
+        vehiculeCount = await _db.Vehicules.CountAsync();
+        userCount     = await _db.Users.CountAsync();
+        pendingCount  = await _db.Colis.CountAsync(c => c.Statut == StatutColis.EnAttente);
+    }
+
+    var ctrlLabel = ctrl switch {
+        "Colis"          => "Colis",
+        "Client"         => "Clients",
+        "Livreur"        => "Livreurs",
+        "Vehicule"       => "Véhicules",
+        "UserManagement" => "Utilisateurs",
+        "User"           => "Espace client",
+        "Dashboard"      => "Tableau de bord",
+        _                => ctrl
+    };
+    var actLabel = act switch {
+        "Create"  => "Nouveau",
+        "Edit"    => "Modifier",
+        "Delete"  => "Supprimer",
+        "Details" => "Détails",
+        _         => ""
+    };
+}
+
+<!-- ── Topbar ── -->
+<header class="topbar">
+    <a class="topbar-brand" asp-controller="@(isAdmin ? "Dashboard" : "User")" asp-action="@(isAdmin ? "Index" : "Colis")">
+        <i class="bi bi-truck-front-fill"></i> LivraisonApp
+    </a>
+    <div class="topbar-user">
+        @if (isAuth)
+        {
+            <span class="user-badge"><i class="bi bi-person-fill me-1"></i>@User.Identity!.Name</span>
+            <span class="user-badge" style="background:rgba(255,255,255,.18)">
+                @if (isAdmin) { <i class="bi bi-shield-fill me-1"></i> } else { <i class="bi bi-person me-1"></i> }
+                @(isAdmin ? "Admin" : "Utilisateur")
+            </span>
+            <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                <button class="btn-logout"><i class="bi bi-box-arrow-right me-1"></i>Déconnexion</button>
+            </form>
+        }
+        else
+        {
+            <a class="btn-logout" asp-controller="Account" asp-action="Login">
+                <i class="bi bi-box-arrow-in-right me-1"></i>Connexion
+            </a>
+        }
+    </div>
+</header>
+
+<div class="main-wrapper">
+    @if (isAuth)
+    {
+        <!-- ── Sidebar ── -->
+        <aside class="sidebar">
+            @if (isAdmin)
             {
-                <span>@User.Identity.Name</span>
-                <form asp-controller="Account" asp-action="Logout" method="post">
-                    <button class="btn btn-light btn-sm">Logout</button>
-                </form>
+                <p class="sidebar-section">Navigation</p>
+                <ul class="sidebar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link @(ctrl == "Dashboard" ? "active" : "")" asp-controller="Dashboard" asp-action="Index">
+                            <i class="bi bi-speedometer2"></i> Tableau de bord
+                        </a>
+                    </li>
+                </ul>
+
+                <p class="sidebar-section">Gestion</p>
+                <ul class="sidebar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link @(ctrl == "Colis" ? "active" : "")" asp-controller="Colis" asp-action="Index">
+                            <i class="bi bi-box-seam"></i> Colis
+                            @if (pendingCount > 0)
+                            {
+                                <span class="sidebar-badge orange">@pendingCount</span>
+                            }
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ctrl == "Client" ? "active" : "")" asp-controller="Client" asp-action="Index">
+                            <i class="bi bi-people"></i> Clients
+                            <span class="sidebar-badge green">@clientCount</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ctrl == "Livreur" ? "active" : "")" asp-controller="Livreur" asp-action="Index">
+                            <i class="bi bi-person-badge"></i> Livreurs
+                            <span class="sidebar-badge">@livreurCount</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link @(ctrl == "Vehicule" ? "active" : "")" asp-controller="Vehicule" asp-action="Index">
+                            <i class="bi bi-truck"></i> Véhicules
+                            <span class="sidebar-badge purple">@vehiculeCount</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <p class="sidebar-section">Administration</p>
+                <ul class="sidebar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link @(ctrl == "UserManagement" ? "active" : "")" asp-controller="UserManagement" asp-action="Index">
+                            <i class="bi bi-people-fill"></i> Utilisateurs
+                            <span class="sidebar-badge">@userCount</span>
+                        </a>
+                    </li>
+                </ul>
             }
             else
             {
-                <a class="btn btn-light btn-sm" asp-controller="Account" asp-action="Login">Login</a>
+                <p class="sidebar-section">Mon espace</p>
+                <ul class="sidebar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link @(ctrl == "User" && act == "Colis" ? "active" : "")" asp-controller="User" asp-action="Colis">
+                            <i class="bi bi-search"></i> Recherche colis
+                        </a>
+                    </li>
+                </ul>
             }
-        </div>
-    </header>
-    <div class="container-fluid">
-        <div class="row">
-            @if (User.Identity?.IsAuthenticated == true)
-            {
-                <aside class="col-md-2 bg-light border-end min-vh-100 p-3">
-                    <ul class="nav flex-column">
-                        <li class="nav-item"><a class="nav-link" asp-controller="Colis" asp-action="Index">Colis</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Client" asp-action="Index">Clients</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Livreur" asp-action="Index">Livreurs</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Vehicule" asp-action="Index">Vehicules</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Dashboard" asp-action="Index">Statistiques</a></li>
-                    </ul>
-                </aside>
-            }
-            <main class="@(User.Identity?.IsAuthenticated == true ? "col-md-10" : "col-12") p-3">
+        </aside>
+
+        <!-- ── Main ── -->
+        <div class="main-with-sidebar">
+            <main class="main-content">
+                @* Breadcrumb *@
+                @if (ctrl != "Dashboard" && ctrl != "Home")
+                {
+                    <nav aria-label="breadcrumb" class="breadcrumb-nav">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a asp-controller="@(isAdmin ? "Dashboard" : "User")" asp-action="@(isAdmin ? "Index" : "Colis")">
+                                    <i class="bi bi-house-fill"></i>
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item @(string.IsNullOrEmpty(actLabel) ? "active" : "")">
+                                @if (!string.IsNullOrEmpty(actLabel))
+                                {
+                                    <a asp-controller="@ctrl" asp-action="Index">@ctrlLabel</a>
+                                }
+                                else
+                                {
+                                    @ctrlLabel
+                                }
+                            </li>
+                            @if (!string.IsNullOrEmpty(actLabel))
+                            {
+                                <li class="breadcrumb-item active">@actLabel</li>
+                            }
+                        </ol>
+                    </nav>
+                }
+
                 @if (TempData["Success"] is string success)
                 {
-                    <div class="alert alert-success">@success</div>
+                    <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i>@success
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                @if (TempData["Error"] is string error)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>@error
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
                 }
                 @RenderBody()
             </main>
+            <footer class="site-footer">
+                <i class="bi bi-truck-front-fill me-1 text-primary"></i>
+                &copy; @DateTime.Now.Year <strong>LivraisonApp</strong> — Tous droits réservés
+            </footer>
         </div>
-    </div>
-    <footer class="border-top footer text-muted"><div class="container">&copy; 2026 - LivraisonApp</div></footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+    }
+    else
+    {
+        @RenderBody()
+    }
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

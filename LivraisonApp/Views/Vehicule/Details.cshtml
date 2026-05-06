@@ -1,5 +1,58 @@
 @model Vehicule
-<h2>Details vehicule</h2>
-<p><b>Type:</b> @Model?.GetType().Name</p>
-<p><b>Marque:</b> @Model?.Marque</p>
-<p><b>Matricule:</b> @Model?.Matricule</p>
+@{
+    ViewData["Title"] = "Détails véhicule";
+    var isCamion = Model is Camion;
+    var camion = Model as Camion;
+    var voiture = Model as Voiture;
+}
+<div class="page-header">
+    <h2><i class="bi bi-truck me-2" style="color:#8b5cf6"></i>Détails véhicule</h2>
+    <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left me-1"></i>Retour</a>
+</div>
+<div class="form-card">
+    <div class="mb-3">
+        <span class="badge-type @(isCamion ? "badge-camion" : "badge-voiture") fs-6">
+            <i class="bi bi-truck me-1"></i>@Model?.GetType().Name
+        </span>
+    </div>
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="text-muted small fw-semibold text-uppercase mb-1">Marque</div>
+            <div class="fs-5 fw-bold">@Model?.Marque</div>
+        </div>
+        <div class="col-md-6">
+            <div class="text-muted small fw-semibold text-uppercase mb-1">Matricule</div>
+            <div><code class="fs-6">@Model?.Matricule</code></div>
+        </div>
+        <div class="col-md-6">
+            <div class="text-muted small fw-semibold text-uppercase mb-1">Couleur</div>
+            <div>@Model?.Couleur</div>
+        </div>
+        <div class="col-md-6">
+            <div class="text-muted small fw-semibold text-uppercase mb-1">Vitesse limite</div>
+            <div>@Model?.VitesseLimite km/h</div>
+        </div>
+        @if (isCamion)
+        {
+            <div class="col-md-6">
+                <div class="text-muted small fw-semibold text-uppercase mb-1">Capacité</div>
+                <div>@camion?.Capacite tonnes</div>
+            </div>
+            <div class="col-md-6">
+                <div class="text-muted small fw-semibold text-uppercase mb-1">Nombre d'essieux</div>
+                <div>@camion?.NbrEssieux</div>
+            </div>
+        }
+        else
+        {
+            <div class="col-md-6">
+                <div class="text-muted small fw-semibold text-uppercase mb-1">Nombre de places</div>
+                <div>@voiture?.NbrPlaces</div>
+            </div>
+        }
+    </div>
+    <div class="mt-4 d-flex gap-2">
+        <a class="btn btn-warning text-white" asp-action="Edit" asp-route-id="@Model?.Id"><i class="bi bi-pencil me-1"></i>Modifier</a>
+        <a class="btn btn-danger" asp-action="Delete" asp-route-id="@Model?.Id"><i class="bi bi-trash me-1"></i>Supprimer</a>
+    </div>
+</div>

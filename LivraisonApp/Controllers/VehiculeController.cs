@@ -23,6 +23,7 @@ public class VehiculeController : Controller
         else
             await _uow.Vehicules.AddAsync(voiture);
         await _uow.SaveChangesAsync();
+        TempData["Success"] = "Véhicule ajouté avec succès.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -36,6 +37,7 @@ public class VehiculeController : Controller
         else
             _uow.Vehicules.Update(voiture);
         await _uow.SaveChangesAsync();
+        TempData["Success"] = "Véhicule modifié avec succès.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -50,6 +52,7 @@ public class VehiculeController : Controller
             _uow.Vehicules.Delete(entity);
             await _uow.SaveChangesAsync();
         }
+        TempData["Success"] = "Véhicule supprimé avec succès.";
         return RedirectToAction(nameof(Index));
     }
 }

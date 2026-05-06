@@ -1,4 +1,5 @@
 using LivraisonApp.Data;
+using LivraisonApp.Models;
 using LivraisonApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,10 +17,14 @@ public class DashboardController : Controller
     {
         var vm = new DashboardViewModel
         {
-            TotalColis = await _context.Colis.CountAsync(),
-            TotalClients = await _context.Clients.CountAsync(),
-            TotalLivreurs = await _context.Livreurs.CountAsync(),
-            TotalVehicules = await _context.Vehicules.CountAsync()
+            TotalColis     = await _context.Colis.CountAsync(),
+            TotalClients   = await _context.Clients.CountAsync(),
+            TotalLivreurs  = await _context.Livreurs.CountAsync(),
+            TotalVehicules = await _context.Vehicules.CountAsync(),
+            TotalRevenue   = await _context.Colis.SumAsync(c => c.Montant),
+            ColisEnAttente = await _context.Colis.CountAsync(c => c.Statut == StatutColis.EnAttente),
+            ColisEnCours   = await _context.Colis.CountAsync(c => c.Statut == StatutColis.EnCours),
+            ColisLivres    = await _context.Colis.CountAsync(c => c.Statut == StatutColis.Livre)
         };
         return View(vm);
     }
@@ -37,14 +42,22 @@ public class DashboardController : Controller
             .OrderBy(x => x.label)
             .ToListAsync();
 
-        var camions = await _context.Camions.CountAsync();
+        var camions  = await _context.Camions.CountAsync();
         var voitures = await _context.Voitures.CountAsync();
+
         var topClients = await _context.Clients
             .Select(c => new { client = $"{c.Nom} {c.Prenom}", total = c.Colis.Count })
             .OrderByDescending(x => x.total)
             .Take(5)
             .ToListAsync();
 
-        return Json(new { colisByMonth, camions, voitures, topClients });
+        var statutData = new
+        {
+            enAttente = await _context.Colis.CountAsync(c => c.Statut == StatutColis.EnAttente),
+            enCours   = await _context.Colis.CountAsync(c => c.Statut == StatutColis.EnCours),
+            livre     = await _context.Colis.CountAsync(c => c.Statut == StatutColis.Livre)
+        };
+
+        return Json(new { colisByMonth, camions, voitures, topClients, statutData });
     }
 }

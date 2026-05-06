@@ -1,6 +1,38 @@
 @model IEnumerable<Client>
-<h2>Clients</h2>
-<a class="btn btn-primary mb-2" asp-action="Create">Nouveau</a>
-<table class="table table-striped"><thead><tr><th>Nom</th><th>Prenom</th><th>Ville</th><th></th></tr></thead><tbody>
-@foreach(var c in Model){<tr><td>@c.Nom</td><td>@c.Prenom</td><td>@c.Ville</td><td><a asp-action="Details" asp-route-id="@c.Id">Details</a> | <a asp-action="Edit" asp-route-id="@c.Id">Edit</a> | <a asp-action="Delete" asp-route-id="@c.Id">Delete</a></td></tr>}
-</tbody></table>
+@{
+    ViewData["Title"] = "Clients";
+}
+<div class="page-header">
+    <h2><i class="bi bi-people me-2 text-success"></i>Gestion des clients</h2>
+    <a class="btn btn-primary" asp-action="Create"><i class="bi bi-plus-lg me-1"></i>Nouveau client</a>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0" id="dataTable">
+            <thead>
+                <tr>
+                    <th>#</th><th>Nom</th><th>Prénom</th><th>Ville</th><th>Code postal</th><th>Nb colis</th><th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model)
+                {
+                    <tr>
+                        <td>@c.Id</td>
+                        <td class="fw-semibold">@c.Nom</td>
+                        <td>@c.Prenom</td>
+                        <td><i class="bi bi-geo-alt me-1 text-muted"></i>@c.Ville</td>
+                        <td>@c.CodePostal</td>
+                        <td><span class="badge bg-primary">@c.Colis.Count</span></td>
+                        <td class="action-links">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@c.Id"><i class="bi bi-eye"></i></a>
+                            <a class="btn btn-sm btn-outline-warning" asp-action="Edit" asp-route-id="@c.Id"><i class="bi bi-pencil"></i></a>
+                            <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@c.Id"><i class="bi bi-trash"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts { <script>new DataTable('#dataTable', { language: { url: 'https://cdn.datatables.net/plug-ins/1.13.8/i18n/fr-FR.json' } });</script> }

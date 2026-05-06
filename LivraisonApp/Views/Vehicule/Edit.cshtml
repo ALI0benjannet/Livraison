@@ -1,11 +1,64 @@
 @model Vehicule
-<h2>Modifier vehicule</h2>
-<form asp-action="Edit" method="post">
-<input type="hidden" name="Id" value="@Model?.Id"/>
-<div class="mb-2"><label>Type</label><select name="type" class="form-select"><option value="Camion">Camion</option><option value="Voiture">Voiture</option></select></div>
-<div class="mb-2"><label>Couleur</label><input name="Couleur" value="@Model?.Couleur" class="form-control"/></div>
-<div class="mb-2"><label>Marque</label><input name="Marque" value="@Model?.Marque" class="form-control"/></div>
-<div class="mb-2"><label>Matricule</label><input name="Matricule" value="@Model?.Matricule" class="form-control"/></div>
-<div class="mb-2"><label>VitesseLimite</label><input name="VitesseLimite" value="@Model?.VitesseLimite" class="form-control"/></div>
-<button class="btn btn-primary">Mettre a jour</button>
-</form>
+@{
+    ViewData["Title"] = "Modifier véhicule";
+    var isCamion = Model is Camion;
+    var camion = Model as Camion;
+    var voiture = Model as Voiture;
+}
+<div class="page-header">
+    <h2><i class="bi bi-pencil-square me-2 text-warning"></i>Modifier véhicule</h2>
+    <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left me-1"></i>Retour</a>
+</div>
+<div class="form-card">
+    <form asp-action="Edit" method="post">
+        <input type="hidden" name="Id" value="@Model?.Id" />
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Type</label>
+            <select name="type" class="form-select" disabled>
+                <option value="Camion" selected="@isCamion">Camion</option>
+                <option value="Voiture" selected="@(!isCamion)">Voiture</option>
+            </select>
+            <input type="hidden" name="type" value="@(isCamion ? "Camion" : "Voiture")" />
+        </div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Marque</label>
+                <input name="Marque" value="@Model?.Marque" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Matricule</label>
+                <input name="Matricule" value="@Model?.Matricule" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Couleur</label>
+                <input name="Couleur" value="@Model?.Couleur" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Vitesse limite (km/h)</label>
+                <input name="VitesseLimite" value="@Model?.VitesseLimite" type="number" class="form-control" />
+            </div>
+            @if (isCamion)
+            {
+                <div class="col-md-6">
+                    <label class="form-label">Capacité (tonnes)</label>
+                    <input name="Capacite" value="@camion?.Capacite" type="number" class="form-control" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Nombre d'essieux</label>
+                    <input name="NbrEssieux" value="@camion?.NbrEssieux" type="number" class="form-control" />
+                </div>
+            }
+            else
+            {
+                <div class="col-md-6">
+                    <label class="form-label">Nombre de places</label>
+                    <input name="NbrPlaces" value="@voiture?.NbrPlaces" type="number" class="form-control" />
+                </div>
+            }
+        </div>
+        <div class="mt-4 d-flex gap-2">
+            <button class="btn btn-warning text-white"><i class="bi bi-check-lg me-1"></i>Mettre à jour</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Annuler</a>
+        </div>
+    </form>
+</div>

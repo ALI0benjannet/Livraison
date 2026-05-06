@@ -1,10 +1,42 @@
 @model Livreur
-<h2>Modifier livreur</h2>
-<form asp-action="Edit" method="post">
-<input type="hidden" asp-for="Id"/>
-<div class="mb-2"><label asp-for="CIN"></label><input asp-for="CIN" class="form-control"/></div>
-<div class="mb-2"><label asp-for="RaisonSocial"></label><input asp-for="RaisonSocial" class="form-control"/></div>
-<div class="mb-2"><label asp-for="Ville"></label><input asp-for="Ville" class="form-control"/></div>
-<div class="mb-2"><label asp-for="VehiculeId"></label><select asp-for="VehiculeId" asp-items="ViewBag.VehiculeId" class="form-select"></select></div>
-<button class="btn btn-primary">Mettre a jour</button>
-</form>
+@{
+    ViewData["Title"] = "Modifier livreur";
+}
+<div class="page-header">
+    <h2><i class="bi bi-pencil-square me-2 text-warning"></i>Modifier livreur</h2>
+    <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left me-1"></i>Retour</a>
+</div>
+<div class="form-card">
+    <form asp-action="Edit" method="post">
+        <div asp-validation-summary="All" class="alert alert-danger py-2 mb-3"></div>
+        <input type="hidden" asp-for="Id" />
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="CIN" class="form-label">CIN <span class="text-danger">*</span></label>
+                <input asp-for="CIN" class="form-control" />
+                <span asp-validation-for="CIN" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="RaisonSocial" class="form-label">Raison sociale</label>
+                <input asp-for="RaisonSocial" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Ville" class="form-label">Ville</label>
+                <input asp-for="Ville" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="CodePostal" class="form-label">Code postal</label>
+                <input asp-for="CodePostal" class="form-control" />
+            </div>
+            <div class="col-12">
+                <label asp-for="VehiculeId" class="form-label">Véhicule assigné</label>
+                <select asp-for="VehiculeId" asp-items="ViewBag.VehiculeId" class="form-select"><option value="">-- Aucun --</option></select>
+            </div>
+        </div>
+        <div class="mt-4 d-flex gap-2">
+            <button class="btn btn-warning text-white"><i class="bi bi-check-lg me-1"></i>Mettre à jour</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Annuler</a>
+        </div>
+    </form>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

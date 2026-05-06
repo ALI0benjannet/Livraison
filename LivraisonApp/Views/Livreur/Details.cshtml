@@ -1,5 +1,48 @@
 @model Livreur
-<h2>Details livreur</h2>
-<p><b>CIN:</b> @Model?.CIN</p>
-<p><b>Ville:</b> @Model?.Ville</p>
-<p><b>Vehicule:</b> @Model?.Vehicule?.Matricule</p>
+@{
+    ViewData["Title"] = "Détails livreur";
+}
+<div class="page-header">
+    <h2><i class="bi bi-person-badge me-2 text-warning"></i>Détails livreur</h2>
+    <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left me-1"></i>Retour</a>
+</div>
+<div class="form-card">
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="text-muted small fw-semibold text-uppercase mb-1">CIN</div>
+            <div class="fs-5 fw-bold">@Model?.CIN</div>
+        </div>
+        <div class="col-md-6">
+            <div class="text-muted small fw-semibold text-uppercase mb-1">Raison sociale</div>
+            <div>@(Model?.RaisonSocial ?? "—")</div>
+        </div>
+        <div class="col-md-6">
+            <div class="text-muted small fw-semibold text-uppercase mb-1">Ville</div>
+            <div><i class="bi bi-geo-alt me-1 text-primary"></i>@(Model?.Ville ?? "—")</div>
+        </div>
+        <div class="col-md-6">
+            <div class="text-muted small fw-semibold text-uppercase mb-1">Code postal</div>
+            <div>@(Model?.CodePostal ?? "—")</div>
+        </div>
+        <div class="col-md-6">
+            <div class="text-muted small fw-semibold text-uppercase mb-1">Véhicule</div>
+            <div>
+                @if (Model?.Vehicule != null)
+                {
+                    <span class="badge-type @(Model.Vehicule.GetType().Name == "Camion" ? "badge-camion" : "badge-voiture")">
+                        @Model.Vehicule.GetType().Name — @Model.Vehicule.Matricule (@Model.Vehicule.Marque)
+                    </span>
+                }
+                else { <span class="text-muted">Aucun</span> }
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="text-muted small fw-semibold text-uppercase mb-1">Nombre de colis</div>
+            <div><span class="badge bg-primary fs-6">@Model?.Colis.Count</span></div>
+        </div>
+    </div>
+    <div class="mt-4 d-flex gap-2">
+        <a class="btn btn-warning text-white" asp-action="Edit" asp-route-id="@Model?.Id"><i class="bi bi-pencil me-1"></i>Modifier</a>
+        <a class="btn btn-danger" asp-action="Delete" asp-route-id="@Model?.Id"><i class="bi bi-trash me-1"></i>Supprimer</a>
+    </div>
+</div>

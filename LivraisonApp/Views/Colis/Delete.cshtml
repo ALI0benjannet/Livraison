@@ -1,7 +1,24 @@
 @model Colis
-<h2>Supprimer colis</h2>
-<p>Confirmer la suppression du colis #@Model?.Id ?</p>
-<form asp-action="Delete" method="post">
-    <input type="hidden" asp-for="Id" />
-    <button class="btn btn-danger">Supprimer</button>
-</form>
+@{
+    ViewData["Title"] = "Supprimer colis";
+}
+<div class="page-header">
+    <h2><i class="bi bi-trash me-2 text-danger"></i>Supprimer colis</h2>
+    <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left me-1"></i>Retour</a>
+</div>
+<div class="form-card" style="max-width:480px">
+    <div class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        Êtes-vous sûr de vouloir supprimer le colis <strong>#@Model?.Id — @Model?.Libelle</strong> ?
+    </div>
+    <dl class="row small">
+        <dt class="col-5 text-muted">Client</dt><dd class="col-7">@Model?.Client?.Nom @Model?.Client?.Prenom</dd>
+        <dt class="col-5 text-muted">Date livraison</dt><dd class="col-7">@Model?.DateLivraison.ToShortDateString()</dd>
+        <dt class="col-5 text-muted">Montant</dt><dd class="col-7">@Model?.Montant.ToString("N2") DZD</dd>
+    </dl>
+    <form asp-action="Delete" method="post" class="d-flex gap-2 mt-3">
+        <input type="hidden" asp-for="Id" />
+        <button class="btn btn-danger"><i class="bi bi-trash me-1"></i>Confirmer la suppression</button>
+        <a class="btn btn-outline-secondary" asp-action="Index">Annuler</a>
+    </form>
+</div>

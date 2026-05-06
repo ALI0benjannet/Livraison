@@ -53,7 +53,7 @@ public class AccountController : Controller
         if (user is not null && await _userManager.IsInRoleAsync(user, "Admin"))
             return RedirectToAction("Index", "Dashboard");
 
-        return RedirectToAction("Index", "Colis");
+        return RedirectToAction("Colis", "User");
     }
 
     [HttpPost]

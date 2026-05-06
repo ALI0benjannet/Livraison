@@ -1,4 +1,32 @@
 @model Client
-<h2>Details client</h2>
-<p><b>Nom:</b> @Model?.Nom @Model?.Prenom</p>
-<p><b>Ville:</b> @Model?.Ville</p>
+@{
+    ViewData["Title"] = "Détails client";
+}
+<div class="page-header">
+    <h2><i class="bi bi-person me-2 text-success"></i>Détails client</h2>
+    <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left me-1"></i>Retour</a>
+</div>
+<div class="form-card">
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="text-muted small fw-semibold text-uppercase mb-1">Nom complet</div>
+            <div class="fs-5 fw-bold">@Model?.Nom @Model?.Prenom</div>
+        </div>
+        <div class="col-md-6">
+            <div class="text-muted small fw-semibold text-uppercase mb-1">Ville</div>
+            <div><i class="bi bi-geo-alt me-1 text-primary"></i>@(Model?.Ville ?? "—")</div>
+        </div>
+        <div class="col-md-6">
+            <div class="text-muted small fw-semibold text-uppercase mb-1">Code postal</div>
+            <div>@(Model?.CodePostal ?? "—")</div>
+        </div>
+        <div class="col-md-6">
+            <div class="text-muted small fw-semibold text-uppercase mb-1">Nombre de colis</div>
+            <div><span class="badge bg-primary fs-6">@Model?.Colis.Count</span></div>
+        </div>
+    </div>
+    <div class="mt-4 d-flex gap-2">
+        <a class="btn btn-warning text-white" asp-action="Edit" asp-route-id="@Model?.Id"><i class="bi bi-pencil me-1"></i>Modifier</a>
+        <a class="btn btn-danger" asp-action="Delete" asp-route-id="@Model?.Id"><i class="bi bi-trash me-1"></i>Supprimer</a>
+    </div>
+</div>

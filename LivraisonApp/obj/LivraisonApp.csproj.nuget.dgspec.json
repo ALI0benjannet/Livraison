@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ghayt\\OneDrive\\Desktop\\livraison\\LivraisonApp\\LivraisonApp.csproj": {}
+    "E:\\livraison\\livraisonApp\\LivraisonApp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ghayt\\OneDrive\\Desktop\\livraison\\LivraisonApp\\LivraisonApp.csproj": {
+    "E:\\livraison\\livraisonApp\\LivraisonApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ghayt\\OneDrive\\Desktop\\livraison\\LivraisonApp\\LivraisonApp.csproj",
+        "projectUniqueName": "E:\\livraison\\livraisonApp\\LivraisonApp.csproj",
         "projectName": "LivraisonApp",
-        "projectPath": "C:\\Users\\ghayt\\OneDrive\\Desktop\\livraison\\LivraisonApp\\LivraisonApp.csproj",
-        "packagesPath": "C:\\Users\\ghayt\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ghayt\\OneDrive\\Desktop\\livraison\\LivraisonApp\\obj\\",
+        "projectPath": "E:\\livraison\\livraisonApp\\LivraisonApp.csproj",
+        "packagesPath": "C:\\Users\\LENOVO\\.nuget\\packages\\",
+        "outputPath": "E:\\livraison\\livraisonApp\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\ghayt\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\LENOVO\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -94,7 +94,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.312/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.310/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

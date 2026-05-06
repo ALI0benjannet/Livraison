@@ -1,10 +1,38 @@
 @model Client
-<h2>Modifier client</h2>
-<form asp-action="Edit" method="post">
-<input type="hidden" asp-for="Id"/>
-<div class="mb-2"><label asp-for="Nom"></label><input asp-for="Nom" class="form-control"/></div>
-<div class="mb-2"><label asp-for="Prenom"></label><input asp-for="Prenom" class="form-control"/></div>
-<div class="mb-2"><label asp-for="Ville"></label><input asp-for="Ville" class="form-control"/></div>
-<div class="mb-2"><label asp-for="CodePostal"></label><input asp-for="CodePostal" class="form-control"/></div>
-<button class="btn btn-primary">Mettre a jour</button>
-</form>
+@{
+    ViewData["Title"] = "Modifier client";
+}
+<div class="page-header">
+    <h2><i class="bi bi-pencil-square me-2 text-warning"></i>Modifier client</h2>
+    <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left me-1"></i>Retour</a>
+</div>
+<div class="form-card">
+    <form asp-action="Edit" method="post">
+        <div asp-validation-summary="All" class="alert alert-danger py-2 mb-3"></div>
+        <input type="hidden" asp-for="Id" />
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="Nom" class="form-label">Nom <span class="text-danger">*</span></label>
+                <input asp-for="Nom" class="form-control" />
+                <span asp-validation-for="Nom" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Prenom" class="form-label">Prénom</label>
+                <input asp-for="Prenom" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Ville" class="form-label">Ville</label>
+                <input asp-for="Ville" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="CodePostal" class="form-label">Code postal</label>
+                <input asp-for="CodePostal" class="form-control" />
+            </div>
+        </div>
+        <div class="mt-4 d-flex gap-2">
+            <button class="btn btn-warning text-white"><i class="bi bi-check-lg me-1"></i>Mettre à jour</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Annuler</a>
+        </div>
+    </form>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

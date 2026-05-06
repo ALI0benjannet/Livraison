@@ -21,6 +21,7 @@ public class ClientController : Controller
         if (!ModelState.IsValid) return View(client);
         await _uow.Clients.AddAsync(client);
         await _uow.SaveChangesAsync();
+        TempData["Success"] = "Client ajouté avec succès.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -32,6 +33,7 @@ public class ClientController : Controller
         if (!ModelState.IsValid) return View(client);
         _uow.Clients.Update(client);
         await _uow.SaveChangesAsync();
+        TempData["Success"] = "Client modifié avec succès.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -46,6 +48,7 @@ public class ClientController : Controller
             _uow.Clients.Delete(entity);
             await _uow.SaveChangesAsync();
         }
+        TempData["Success"] = "Client supprimé avec succès.";
         return RedirectToAction(nameof(Index));
     }
 }

@@ -1,13 +1,57 @@
 @model Colis
-<h2>Modifier colis</h2>
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Id" />
-    <div class="mb-2"><label asp-for="DateLivraison"></label><input asp-for="DateLivraison" class="form-control" /></div>
-    <div class="mb-2"><label asp-for="Montant"></label><input asp-for="Montant" class="form-control" /></div>
-    <div class="mb-2"><label asp-for="Poids"></label><input asp-for="Poids" class="form-control" /></div>
-    <div class="mb-2"><label asp-for="Volume"></label><input asp-for="Volume" class="form-control" /></div>
-    <div class="mb-2"><label asp-for="Libelle"></label><input asp-for="Libelle" class="form-control" /></div>
-    <div class="mb-2"><label asp-for="ClientId"></label><select asp-for="ClientId" asp-items="ViewBag.ClientId" class="form-select"></select></div>
-    <div class="mb-2"><label asp-for="LivreurId"></label><select asp-for="LivreurId" asp-items="ViewBag.LivreurId" class="form-select"></select></div>
-    <button class="btn btn-primary">Mettre a jour</button>
-</form>
+@{
+    ViewData["Title"] = "Modifier colis";
+}
+<div class="page-header">
+    <h2><i class="bi bi-pencil-square me-2 text-warning"></i>Modifier colis #@Model?.Id</h2>
+    <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left me-1"></i>Retour</a>
+</div>
+<div class="form-card">
+    <form asp-action="Edit" method="post">
+        <div asp-validation-summary="All" class="alert alert-danger py-2 mb-3"></div>
+        <input type="hidden" asp-for="Id" />
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="Statut" class="form-label">Statut</label>
+                <select asp-for="Statut" class="form-select"
+                        asp-items="Html.GetEnumSelectList<StatutColis>()"></select>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Libelle" class="form-label">Libellé</label>
+                <input asp-for="Libelle" class="form-control" />
+                <span asp-validation-for="Libelle" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="DateLivraison" class="form-label">Date de livraison</label>
+                <input asp-for="DateLivraison" class="form-control" type="datetime-local" />
+                <span asp-validation-for="DateLivraison" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Montant" class="form-label">Montant (DZD)</label>
+                <input asp-for="Montant" class="form-control" />
+                <span asp-validation-for="Montant" class="text-danger small"></span>
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Poids" class="form-label">Poids (kg)</label>
+                <input asp-for="Poids" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label asp-for="Volume" class="form-label">Volume (m³)</label>
+                <input asp-for="Volume" class="form-control" />
+            </div>
+            <div class="col-md-6">
+                <label asp-for="ClientId" class="form-label">Client</label>
+                <select asp-for="ClientId" asp-items="ViewBag.ClientId" class="form-select"></select>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="LivreurId" class="form-label">Livreur</label>
+                <select asp-for="LivreurId" asp-items="ViewBag.LivreurId" class="form-select"></select>
+            </div>
+        </div>
+        <div class="mt-4 d-flex gap-2">
+            <button class="btn btn-warning text-white"><i class="bi bi-check-lg me-1"></i>Mettre à jour</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Annuler</a>
+        </div>
+    </form>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

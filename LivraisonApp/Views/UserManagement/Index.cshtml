@@ -1,0 +1,93 @@
+@model IEnumerable<UserManagementViewModel>
+@{
+    ViewData["Title"] = "Gestion des utilisateurs";
+}
+<div class="page-header">
+    <h2><i class="bi bi-people-fill me-2 text-info"></i>Gestion des utilisateurs</h2>
+    <span class="badge bg-primary fs-6">@Model.Count() comptes</span>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0" id="dataTable">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Rôle</th>
+                    <th>Email confirmé</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var u in Model)
+                {
+                    <tr>
+                        <td>
+                            <i class="bi bi-person-circle me-2 text-muted"></i>
+                            <strong>@u.Email</strong>
+                            @if (u.Email == "admin@livraison.local")
+                            {
+                                <span class="badge bg-danger ms-2">Protégé</span>
+                            }
+                        </td>
+                        <td>
+                            @if (u.Role == "Admin")
+                            {
+                                <span class="badge bg-danger"><i class="bi bi-shield-fill me-1"></i>Admin</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary"><i class="bi bi-person me-1"></i>User</span>
+                            }
+                        </td>
+                        <td>
+                            @if (u.EmailConfirmed)
+                            {
+                                <span class="text-success"><i class="bi bi-check-circle-fill"></i> Confirmé</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted"><i class="bi bi-x-circle"></i> Non confirmé</span>
+                            }
+                        </td>
+                        <td>
+                            @if (u.IsLocked)
+                            {
+                                <span class="status-badge status-en-attente"><i class="bi bi-lock-fill me-1"></i>Verrouillé</span>
+                            }
+                            else
+                            {
+                                <span class="status-badge status-livre"><i class="bi bi-unlock-fill me-1"></i>Actif</span>
+                            }
+                        </td>
+                        <td>
+                            @if (u.Email != "admin@livraison.local")
+                            {
+                                <form asp-action="ToggleLock" asp-route-id="@u.Id" method="post" class="d-inline">
+                                    <button class="btn btn-sm @(u.IsLocked ? "btn-outline-success" : "btn-outline-warning")" 
+                                            title="@(u.IsLocked ? "Déverrouiller" : "Verrouiller")">
+                                        <i class="bi bi-@(u.IsLocked ? "unlock" : "lock")"></i>
+                                    </button>
+                                </form>
+                                <form asp-action="Delete" asp-route-id="@u.Id" method="post" class="d-inline"
+                                      onsubmit="return confirm('Supprimer le compte @u.Email ?')">
+                                    <button class="btn btn-sm btn-outline-danger" title="Supprimer">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">—</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts {
+    <script>new DataTable('#dataTable', { language: { url: 'https://cdn.datatables.net/plug-ins/1.13.8/i18n/fr-FR.json' } });</script>
+}

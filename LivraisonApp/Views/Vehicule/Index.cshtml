@@ -1,6 +1,43 @@
 @model IEnumerable<Vehicule>
-<h2>Vehicules</h2>
-<a class="btn btn-primary mb-2" asp-action="Create">Nouveau</a>
-<table class="table table-striped"><thead><tr><th>Type</th><th>Marque</th><th>Matricule</th><th></th></tr></thead><tbody>
-@foreach(var v in Model){<tr><td>@v.GetType().Name</td><td>@v.Marque</td><td>@v.Matricule</td><td><a asp-action="Details" asp-route-id="@v.Id">Details</a> | <a asp-action="Edit" asp-route-id="@v.Id">Edit</a> | <a asp-action="Delete" asp-route-id="@v.Id">Delete</a></td></tr>}
-</tbody></table>
+@{
+    ViewData["Title"] = "Véhicules";
+}
+<div class="page-header">
+    <h2><i class="bi bi-truck me-2 text-purple" style="color:#8b5cf6"></i>Gestion des véhicules</h2>
+    <a class="btn btn-primary" asp-action="Create"><i class="bi bi-plus-lg me-1"></i>Nouveau véhicule</a>
+</div>
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0" id="dataTable">
+            <thead>
+                <tr><th>Type</th><th>Marque</th><th>Matricule</th><th>Couleur</th><th>Vitesse limite</th><th>Spécifique</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var v in Model)
+                {
+                    <tr>
+                        <td>
+                            <span class="badge-type @(v.GetType().Name == "Camion" ? "badge-camion" : "badge-voiture")">
+                                <i class="bi bi-truck me-1"></i>@v.GetType().Name
+                            </span>
+                        </td>
+                        <td class="fw-semibold">@v.Marque</td>
+                        <td><code>@v.Matricule</code></td>
+                        <td>@v.Couleur</td>
+                        <td>@v.VitesseLimite km/h</td>
+                        <td class="text-muted small">
+                            @if (v is Camion c) { <span>Cap. @c.Capacite t — @c.NbrEssieux essieux</span> }
+                            @if (v is Voiture vo) { <span>@vo.NbrPlaces places</span> }
+                        </td>
+                        <td class="action-links">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@v.Id"><i class="bi bi-eye"></i></a>
+                            <a class="btn btn-sm btn-outline-warning" asp-action="Edit" asp-route-id="@v.Id"><i class="bi bi-pencil"></i></a>
+                            <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@v.Id"><i class="bi bi-trash"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts { <script>new DataTable('#dataTable', { language: { url: 'https://cdn.datatables.net/plug-ins/1.13.8/i18n/fr-FR.json' } });</script> }

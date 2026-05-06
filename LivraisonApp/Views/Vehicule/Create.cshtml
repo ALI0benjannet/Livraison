@@ -1,12 +1,63 @@
-<h2>Nouveau vehicule</h2>
-<form asp-action="Create" method="post">
-<div class="mb-2"><label>Type</label><select name="type" class="form-select"><option value="Camion">Camion</option><option value="Voiture">Voiture</option></select></div>
-<div class="mb-2"><label>Couleur</label><input name="Couleur" class="form-control"/></div>
-<div class="mb-2"><label>Marque</label><input name="Marque" class="form-control"/></div>
-<div class="mb-2"><label>Matricule</label><input name="Matricule" class="form-control"/></div>
-<div class="mb-2"><label>VitesseLimite</label><input name="VitesseLimite" class="form-control"/></div>
-<div class="mb-2"><label>Capacite (camion)</label><input name="Capacite" class="form-control"/></div>
-<div class="mb-2"><label>NbrEssieux (camion)</label><input name="NbrEssieux" class="form-control"/></div>
-<div class="mb-2"><label>NbrPlaces (voiture)</label><input name="NbrPlaces" class="form-control"/></div>
-<button class="btn btn-primary">Enregistrer</button>
-</form>
+@{
+    ViewData["Title"] = "Nouveau véhicule";
+}
+<div class="page-header">
+    <h2><i class="bi bi-plus-circle me-2 text-primary"></i>Nouveau véhicule</h2>
+    <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left me-1"></i>Retour</a>
+</div>
+<div class="form-card">
+    <form asp-action="Create" method="post">
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Type de véhicule <span class="text-danger">*</span></label>
+            <select name="type" class="form-select" id="typeSelect" onchange="toggleFields()">
+                <option value="Camion">Camion</option>
+                <option value="Voiture">Voiture</option>
+            </select>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Marque</label>
+                <input name="Marque" class="form-control" placeholder="Ex: Mercedes" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Matricule</label>
+                <input name="Matricule" class="form-control" placeholder="Ex: 123-ALG-16" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Couleur</label>
+                <input name="Couleur" class="form-control" placeholder="Ex: Blanc" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Vitesse limite (km/h)</label>
+                <input name="VitesseLimite" type="number" class="form-control" placeholder="120" />
+            </div>
+            <div class="col-md-6" id="camionFields">
+                <label class="form-label">Capacité (tonnes)</label>
+                <input name="Capacite" type="number" class="form-control" placeholder="0" />
+            </div>
+            <div class="col-md-6" id="camionFields2">
+                <label class="form-label">Nombre d'essieux</label>
+                <input name="NbrEssieux" type="number" class="form-control" placeholder="0" />
+            </div>
+            <div class="col-md-6 d-none" id="voitureFields">
+                <label class="form-label">Nombre de places</label>
+                <input name="NbrPlaces" type="number" class="form-control" placeholder="0" />
+            </div>
+        </div>
+        <div class="mt-4 d-flex gap-2">
+            <button class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Enregistrer</button>
+            <a class="btn btn-outline-secondary" asp-action="Index">Annuler</a>
+        </div>
+    </form>
+</div>
+@section Scripts {
+<script>
+function toggleFields() {
+    const t = document.getElementById('typeSelect').value;
+    document.getElementById('camionFields').classList.toggle('d-none', t !== 'Camion');
+    document.getElementById('camionFields2').classList.toggle('d-none', t !== 'Camion');
+    document.getElementById('voitureFields').classList.toggle('d-none', t !== 'Voiture');
+}
+toggleFields();
+</script>
+}

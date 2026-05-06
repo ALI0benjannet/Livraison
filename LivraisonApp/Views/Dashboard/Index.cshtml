@@ -1,31 +1,321 @@
 @model DashboardViewModel
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = "Tableau de bord";
 }
-<h2 class="mb-3">Tableau de bord</h2>
+
+<div class="page-header">
+    <h2><i class="bi bi-speedometer2 me-2 text-primary"></i>Tableau de bord</h2>
+    <span class="text-muted small"><i class="bi bi-calendar3 me-1"></i>@DateTime.Now.ToString("dddd dd MMMM yyyy", new System.Globalization.CultureInfo("fr-FR"))</span>
+</div>
+
+<!-- KPI Row 1 -->
+<div class="row g-3 mb-3">
+    <div class="col-6 col-xl-2">
+        <div class="kpi-card kpi-blue">
+            <i class="bi bi-box-seam kpi-icon"></i>
+            <div class="kpi-label">Total colis</div>
+            <div class="kpi-value">@Model.TotalColis</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-2">
+        <div class="kpi-card kpi-teal">
+            <i class="bi bi-currency-dollar kpi-icon"></i>
+            <div class="kpi-label">Revenus totaux</div>
+            <div class="kpi-value" style="font-size:1.4rem">@Model.TotalRevenue.ToString("N0")</div>
+            <div class="kpi-sub">DZD</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-2">
+        <div class="kpi-card kpi-green">
+            <i class="bi bi-people kpi-icon"></i>
+            <div class="kpi-label">Clients</div>
+            <div class="kpi-value">@Model.TotalClients</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-2">
+        <div class="kpi-card kpi-orange">
+            <i class="bi bi-person-badge kpi-icon"></i>
+            <div class="kpi-label">Livreurs</div>
+            <div class="kpi-value">@Model.TotalLivreurs</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-2">
+        <div class="kpi-card kpi-purple">
+            <i class="bi bi-truck kpi-icon"></i>
+            <div class="kpi-label">Véhicules</div>
+            <div class="kpi-value">@Model.TotalVehicules</div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-2">
+        <div class="kpi-card kpi-rose">
+            <i class="bi bi-hourglass-split kpi-icon"></i>
+            <div class="kpi-label">En attente</div>
+            <div class="kpi-value">@Model.ColisEnAttente</div>
+        </div>
+    </div>
+</div>
+
+<!-- Statut summary -->
+<div class="row g-3 mb-3">
+    <div class="col-12">
+        <div class="chart-card">
+            <h6><i class="bi bi-bar-chart-steps me-2 text-primary"></i>Répartition par statut</h6>
+            <div class="statut-progress">
+                <div class="statut-item si-attente">
+                    <div class="si-value">@Model.ColisEnAttente</div>
+                    <div class="si-label">? En attente</div>
+                </div>
+                <div class="statut-item si-cours">
+                    <div class="si-value">@Model.ColisEnCours</div>
+                    <div class="si-label">?? En cours</div>
+                </div>
+                <div class="statut-item si-livre">
+                    <div class="si-value">@Model.ColisLivres</div>
+                    <div class="si-label">? Livrés</div>
+                </div>
+                @{
+                    var total = Model.TotalColis > 0 ? Model.TotalColis : 1;
+                    var pct = (int)Math.Round(Model.ColisLivres * 100.0 / total);
+                }
+                <div class="statut-item" style="flex:3; background:#f0fdf4; border-radius:12px; padding:1rem; display:flex; flex-direction:column; justify-content:center;">
+                    <div class="d-flex justify-content-between mb-1">
+                        <small class="fw-bold text-muted">Taux de livraison</small>
+                        <small class="fw-bold text-success">@pct%</small>
+                    </div>
+                    <div class="progress" style="height:10px; border-radius:10px;">
+                        <div class="progress-bar bg-success" style="width:@pct%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-3 mb-3">
+    <div class="col-lg-8">
+        <div class="chart-card">
+            <h6><i class="bi bi-bar-chart me-2 text-primary"></i>Colis par mois</h6>
+            <canvas id="barColis" height="110"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="chart-card">
+            <h6><i class="bi bi-pie-chart me-2 text-success"></i>Statut des colis</h6>
+            <canvas id="pieStatut" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
 <div class="row g-3 mb-4">
-    <div class="col-md-3"><div class="card"><div class="card-body"><h6>Total Colis</h6><h3>@Model.TotalColis</h3></div></div></div>
-    <div class="col-md-3"><div class="card"><div class="card-body"><h6>Total Clients</h6><h3>@Model.TotalClients</h3></div></div></div>
-    <div class="col-md-3"><div class="card"><div class="card-body"><h6>Total Livreurs</h6><h3>@Model.TotalLivreurs</h3></div></div></div>
-    <div class="col-md-3"><div class="card"><div class="card-body"><h6>Total Vehicules</h6><h3>@Model.TotalVehicules</h3></div></div></div>
+    <div class="col-lg-8">
+        <div class="chart-card">
+            <h6><i class="bi bi-graph-up me-2 text-warning"></i>Revenus mensuels (DZD)</h6>
+            <canvas id="lineRevenue" height="80"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="chart-card">
+            <h6><i class="bi bi-pie-chart me-2 text-info"></i>Répartition véhicules</h6>
+            <canvas id="pieVehicules" height="200"></canvas>
+        </div>
+    </div>
 </div>
-<div class="row g-3">
-    <div class="col-md-6"><canvas id="barColis"></canvas></div>
-    <div class="col-md-6"><canvas id="pieVehicules"></canvas></div>
-    <div class="col-md-12"><canvas id="lineRevenue"></canvas></div>
+
+<!-- Top clients -->
+<div class="card">
+    <div class="card-header"><i class="bi bi-trophy-fill me-2 text-warning"></i>Top 5 clients par nombre de colis</div>
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0" id="topClientsTable">
+            <thead><tr><th style="width:50px">#</th><th>Client</th><th>Colis</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </div>
 </div>
-<h4 class="mt-4">Top 5 clients</h4>
-<table class="table table-striped" id="topClientsTable"><thead><tr><th>Client</th><th>Nb Colis</th></tr></thead><tbody></tbody></table>
+
 @section Scripts {
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-fetch('/Dashboard/Stats').then(r=>r.json()).then(d=>{
- const labels=d.colisByMonth.map(x=>x.label), totals=d.colisByMonth.map(x=>x.total), revenue=d.colisByMonth.map(x=>x.revenue);
- new Chart(document.getElementById('barColis'),{type:'bar',data:{labels,datasets:[{label:'Colis/mois',data:totals,backgroundColor:'#0d6efd'}]}});
- new Chart(document.getElementById('pieVehicules'),{type:'pie',data:{labels:['Camions','Voitures'],datasets:[{data:[d.camions,d.voitures]}]}});
- new Chart(document.getElementById('lineRevenue'),{type:'line',data:{labels,datasets:[{label:'Montant total',data:revenue,borderColor:'#0d6efd'}]}});
- const body=document.querySelector('#topClientsTable tbody');
- d.topClients.forEach(x=>body.innerHTML += `<tr><td>${x.client}</td><td>${x.total}</td></tr>`);
+fetch('/Dashboard/Stats').then(r => r.json()).then(d => {
+    const labels  = d.colisByMonth.map(x => x.label);
+    const totals  = d.colisByMonth.map(x => x.total);
+    const revenue = d.colisByMonth.map(x => x.revenue);
+
+    new Chart(document.getElementById('barColis'), {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Colis', data: totals, backgroundColor: 'rgba(59,130,246,0.85)', borderRadius: 7, borderSkipped: false }] },
+        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+    });
+
+    new Chart(document.getElementById('pieStatut'), {
+        type: 'doughnut',
+        data: {
+            labels: ['En attente', 'En cours', 'Livré'],
+            datasets: [{ data: [d.statutData.enAttente, d.statutData.enCours, d.statutData.livre],
+                backgroundColor: ['#fef3c7', '#dbeafe', '#d1fae5'],
+                borderColor: ['#f59e0b', '#3b82f6', '#10b981'],
+                borderWidth: 2 }]
+        },
+        options: { plugins: { legend: { position: 'bottom' } }, cutout: '60%' }
+    });
+
+    new Chart(document.getElementById('lineRevenue'), {
+        type: 'line',
+        data: { labels, datasets: [{ label: 'Revenus (DZD)', data: revenue, borderColor: '#f59e0b',
+            backgroundColor: 'rgba(245,158,11,.08)', borderWidth: 2.5, fill: true, tension: 0.4,
+            pointBackgroundColor: '#f59e0b', pointRadius: 4 }] },
+        options: { scales: { y: { beginAtZero: true } } }
+    });
+
+    new Chart(document.getElementById('pieVehicules'), {
+        type: 'doughnut',
+        data: { labels: ['Camions', 'Voitures'], datasets: [{ data: [d.camions, d.voitures],
+            backgroundColor: ['#dbeafe', '#d1fae5'], borderColor: ['#3b82f6', '#10b981'], borderWidth: 2 }] },
+        options: { plugins: { legend: { position: 'bottom' } }, cutout: '60%' }
+    });
+
+    const tbody = document.querySelector('#topClientsTable tbody');
+    const medals = ['??','??','??','4??','5??'];
+    d.topClients.forEach((x, i) => {
+        tbody.innerHTML += `<tr>
+            <td class="text-center fs-5">${medals[i] || (i+1)}</td>
+            <td><i class="bi bi-person-circle me-2 text-muted"></i><strong>${x.client}</strong></td>
+            <td><span class="badge bg-primary">${x.total} colis</span></td>
+        </tr>`;
+    });
+});
+</script>
+}
+
+<div class="page-header">
+    <h2><i class="bi bi-speedometer2 me-2 text-primary"></i>Tableau de bord</h2>
+    <span class="text-muted small"><i class="bi bi-calendar3 me-1"></i>@DateTime.Now.ToString("dddd dd MMMM yyyy", new System.Globalization.CultureInfo("fr-FR"))</span>
+</div>
+
+<!-- KPI Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card kpi-blue">
+            <i class="bi bi-box-seam kpi-icon"></i>
+            <div class="kpi-label">Total Colis</div>
+            <div class="kpi-value">@Model.TotalColis</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card kpi-green">
+            <i class="bi bi-people kpi-icon"></i>
+            <div class="kpi-label">Total Clients</div>
+            <div class="kpi-value">@Model.TotalClients</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card kpi-orange">
+            <i class="bi bi-person-badge kpi-icon"></i>
+            <div class="kpi-label">Total Livreurs</div>
+            <div class="kpi-value">@Model.TotalLivreurs</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="kpi-card kpi-purple">
+            <i class="bi bi-truck kpi-icon"></i>
+            <div class="kpi-label">Total Véhicules</div>
+            <div class="kpi-value">@Model.TotalVehicules</div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 1 -->
+<div class="row g-3 mb-3">
+    <div class="col-lg-8">
+        <div class="chart-card">
+            <h6><i class="bi bi-bar-chart me-2 text-primary"></i>Colis par mois</h6>
+            <canvas id="barColis" height="100"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="chart-card">
+            <h6><i class="bi bi-pie-chart me-2 text-success"></i>Répartition véhicules</h6>
+            <canvas id="pieVehicules" height="180"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 2 -->
+<div class="row g-3 mb-4">
+    <div class="col-12">
+        <div class="chart-card">
+            <h6><i class="bi bi-graph-up me-2 text-warning"></i>Revenus mensuels (DZD)</h6>
+            <canvas id="lineRevenue" height="60"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Top Clients Table -->
+<div class="card">
+    <div class="card-header"><i class="bi bi-trophy me-2 text-warning"></i>Top 5 clients (par nombre de colis)</div>
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0" id="topClientsTable">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Client</th>
+                    <th>Nombre de colis</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+fetch('/Dashboard/Stats').then(r => r.json()).then(d => {
+    const labels   = d.colisByMonth.map(x => x.label);
+    const totals   = d.colisByMonth.map(x => x.total);
+    const revenue  = d.colisByMonth.map(x => x.revenue);
+
+    new Chart(document.getElementById('barColis'), {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'Colis', data: totals, backgroundColor: 'rgba(59,130,246,0.8)', borderRadius: 6 }] },
+        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
+    });
+
+    new Chart(document.getElementById('pieVehicules'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Camions', 'Voitures'],
+            datasets: [{ data: [d.camions, d.voitures], backgroundColor: ['#3b82f6', '#10b981'], borderWidth: 0 }]
+        },
+        options: { plugins: { legend: { position: 'bottom' } }, cutout: '65%' }
+    });
+
+    new Chart(document.getElementById('lineRevenue'), {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Revenus (DZD)',
+                data: revenue,
+                borderColor: '#f59e0b',
+                backgroundColor: 'rgba(245,158,11,0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#f59e0b'
+            }]
+        },
+        options: { scales: { y: { beginAtZero: true } } }
+    });
+
+    const tbody = document.querySelector('#topClientsTable tbody');
+    d.topClients.forEach((x, i) => {
+        tbody.innerHTML += `<tr>
+            <td><span class="badge bg-warning text-dark">${i + 1}</span></td>
+            <td><i class="bi bi-person-circle me-2 text-muted"></i>${x.client}</td>
+            <td><span class="badge bg-primary">${x.total}</span></td>
+        </tr>`;
+    });
 });
 </script>
 }

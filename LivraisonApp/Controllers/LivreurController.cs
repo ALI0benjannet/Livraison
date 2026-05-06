@@ -24,6 +24,7 @@ public class LivreurController : Controller
         if (!ModelState.IsValid) return View(livreur);
         await _uow.Livreurs.AddAsync(livreur);
         await _uow.SaveChangesAsync();
+        TempData["Success"] = "Livreur ajouté avec succès.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -40,6 +41,7 @@ public class LivreurController : Controller
         if (!ModelState.IsValid) return View(livreur);
         _uow.Livreurs.Update(livreur);
         await _uow.SaveChangesAsync();
+        TempData["Success"] = "Livreur modifié avec succès.";
         return RedirectToAction(nameof(Index));
     }
 
@@ -54,6 +56,7 @@ public class LivreurController : Controller
             _uow.Livreurs.Delete(entity);
             await _uow.SaveChangesAsync();
         }
+        TempData["Success"] = "Livreur supprimé avec succès.";
         return RedirectToAction(nameof(Index));
     }
 }

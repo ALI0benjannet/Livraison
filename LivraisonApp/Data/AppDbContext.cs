@@ -58,6 +58,16 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                 .WithMany(l => l.Colis)
                 .HasForeignKey(c => c.LivreurId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            entity.Property(c => c.Statut)
+                .HasConversion<string>()
+                .HasDefaultValue(StatutColis.EnAttente)
+                .IsRequired();
+
+            entity.Property(c => c.Libelle).HasMaxLength(200);
+            entity.Property(c => c.Montant).HasPrecision(18, 2);
+            entity.Property(c => c.Poids).HasPrecision(10, 3);
+            entity.Property(c => c.Volume).HasPrecision(10, 3);
         });
     }
 }

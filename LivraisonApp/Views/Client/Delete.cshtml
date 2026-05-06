@@ -1,3 +1,23 @@
 @model Client
-<h2>Supprimer client</h2>
-<form asp-action="Delete" method="post"><input type="hidden" asp-for="Id"/><button class="btn btn-danger">Confirmer</button></form>
+@{
+    ViewData["Title"] = "Supprimer client";
+}
+<div class="page-header">
+    <h2><i class="bi bi-trash me-2 text-danger"></i>Supprimer client</h2>
+    <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left me-1"></i>Retour</a>
+</div>
+<div class="form-card" style="max-width:480px">
+    <div class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        Êtes-vous sûr de vouloir supprimer le client <strong>@Model?.Nom @Model?.Prenom</strong> ?
+    </div>
+    <dl class="row small">
+        <dt class="col-5 text-muted">Ville</dt><dd class="col-7">@(Model?.Ville ?? "—")</dd>
+        <dt class="col-5 text-muted">Code postal</dt><dd class="col-7">@(Model?.CodePostal ?? "—")</dd>
+    </dl>
+    <form asp-action="Delete" method="post" class="d-flex gap-2 mt-3">
+        <input type="hidden" asp-for="Id" />
+        <button class="btn btn-danger"><i class="bi bi-trash me-1"></i>Confirmer la suppression</button>
+        <a class="btn btn-outline-secondary" asp-action="Index">Annuler</a>
+    </form>
+</div>
