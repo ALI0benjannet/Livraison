@@ -328,4 +328,3 @@ E:\livraison\LivraisonApp\obj\Debug\net8.0\refint\LivraisonApp.dll
 E:\livraison\LivraisonApp\obj\Debug\net8.0\LivraisonApp.pdb
 E:\livraison\LivraisonApp\obj\Debug\net8.0\LivraisonApp.genruntimeconfig.cache
 E:\livraison\LivraisonApp\obj\Debug\net8.0\ref\LivraisonApp.dll
-E:\livraison\LivraisonApp\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

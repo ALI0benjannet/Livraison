@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "E:\\livraison\\livraisonApp\\LivraisonApp.csproj": {}
+    "E:\\livraison\\LivraisonApp\\LivraisonApp.csproj": {}
   },
   "projects": {
-    "E:\\livraison\\livraisonApp\\LivraisonApp.csproj": {
+    "E:\\livraison\\LivraisonApp\\LivraisonApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\livraison\\livraisonApp\\LivraisonApp.csproj",
+        "projectUniqueName": "E:\\livraison\\LivraisonApp\\LivraisonApp.csproj",
         "projectName": "LivraisonApp",
-        "projectPath": "E:\\livraison\\livraisonApp\\LivraisonApp.csproj",
+        "projectPath": "E:\\livraison\\LivraisonApp\\LivraisonApp.csproj",
         "packagesPath": "C:\\Users\\LENOVO\\.nuget\\packages\\",
-        "outputPath": "E:\\livraison\\livraisonApp\\obj\\",
+        "outputPath": "E:\\livraison\\LivraisonApp\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
