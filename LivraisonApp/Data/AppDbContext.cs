@@ -65,9 +65,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                 .IsRequired();
 
             entity.Property(c => c.Libelle).HasMaxLength(200);
-            entity.Property(c => c.Montant).HasPrecision(18, 2);
-            entity.Property(c => c.Poids).HasPrecision(10, 3);
-            entity.Property(c => c.Volume).HasPrecision(10, 3);
+            // Montant/Poids/Volume sont des float -> SQL `real` (pas de précision applicable)
         });
     }
 }

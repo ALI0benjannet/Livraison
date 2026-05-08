@@ -1,0 +1,247 @@
+@using LivraisonApp.Models
+@model IEnumerable<Colis>
+@{
+    ViewData["Title"] = "Mes livraisons";
+    var search = ViewBag.Search as string ?? "";
+    var statut = ViewBag.Statut as StatutColis?;
+    var clientInfos = ViewBag.ClientInfos as IDictionary<int, object>;
+    string? PhoneOf(int id) {
+        if (clientInfos != null && clientInfos.TryGetValue(id, out var o))
+            return (string?)o.GetType().GetProperty("PhoneNumber")?.GetValue(o);
+        return null;
+    }
+    string? AddressOf(int id) {
+        if (clientInfos != null && clientInfos.TryGetValue(id, out var o))
+            return (string?)o.GetType().GetProperty("Adresse")?.GetValue(o);
+        return null;
+    }
+}
+
+<div class="page-header">
+    <h2><i class="bi bi-truck me-2 text-warning"></i>Mes livraisons</h2>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show"><i class="bi bi-check-circle me-1"></i>@TempData["Success"]<button class="btn-close" data-bs-dismiss="alert"></button></div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show"><i class="bi bi-exclamation-triangle me-1"></i>@TempData["Error"]<button class="btn-close" data-bs-dismiss="alert"></button></div>
+}
+
+<!-- Stats compactes -->
+<div class="row g-3 mb-3">
+    <div class="col-6 col-md-3">
+        <div class="kpi-card kpi-blue">
+            <i class="bi bi-box-seam kpi-icon"></i>
+            <div class="kpi-label">Total assigné</div>
+            <div class="kpi-value" id="kpi-total">@ViewBag.Total</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="kpi-card kpi-rose">
+            <i class="bi bi-hourglass-split kpi-icon"></i>
+            <div class="kpi-label">En attente</div>
+            <div class="kpi-value" id="kpi-attente">@ViewBag.EnAttente</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="kpi-card kpi-orange">
+            <i class="bi bi-truck kpi-icon"></i>
+            <div class="kpi-label">En cours</div>
+            <div class="kpi-value" id="kpi-cours">@ViewBag.EnCours</div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="kpi-card kpi-green">
+            <i class="bi bi-check-circle kpi-icon"></i>
+            <div class="kpi-label">Livrés</div>
+            <div class="kpi-value" id="kpi-livres">@ViewBag.Livres</div>
+        </div>
+    </div>
+</div>
+
+<!-- Recherche -->
+<div class="form-card mb-3">
+    <form method="get" class="row g-2 align-items-end">
+        <div class="col-md-6">
+            <label class="form-label small text-muted">Recherche (libellé, client)</label>
+            <input type="text" name="search" value="@search" class="form-control" placeholder="Rechercher..." />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small text-muted">Statut</label>
+            <select name="statut" class="form-select">
+                <option value="">— Tous —</option>
+                <option value="EnAttente" selected="@(statut == StatutColis.EnAttente)">En attente</option>
+                <option value="EnCours" selected="@(statut == StatutColis.EnCours)">En cours</option>
+                <option value="Livre" selected="@(statut == StatutColis.Livre)">Livré</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button class="btn btn-primary flex-fill"><i class="bi bi-search me-1"></i>Filtrer</button>
+            <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i></a>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>#</th><th>Libellé</th><th>Client</th><th>Téléphone / Adresse</th>
+                    <th>Date</th><th>Montant</th><th>Statut actuel</th><th class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model)
+                {
+                    <tr data-row-id="@c.Id">
+                        <td class="text-muted">@c.Id</td>
+                        <td class="fw-semibold">@c.Libelle</td>
+                        <td>
+                            <i class="bi bi-person-circle me-1 text-muted"></i>@c.Client?.Nom @c.Client?.Prenom
+                            <div class="text-muted small"><i class="bi bi-geo-alt me-1"></i>@c.Client?.Ville</div>
+                        </td>
+                        <td>
+                            @{ var tel = PhoneOf(c.ClientId); var adr = AddressOf(c.ClientId); }
+                            @if (!string.IsNullOrEmpty(tel))
+                            {
+                                <a href="tel:@tel" class="text-decoration-none fw-semibold"><i class="bi bi-telephone-fill text-success me-1"></i>@tel</a>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">—</span>
+                            }
+                            @if (!string.IsNullOrEmpty(adr))
+                            {
+                                <div class="text-muted small"><i class="bi bi-geo-alt me-1"></i>@adr</div>
+                            }
+                        </td>
+                        <td>@c.DateLivraison.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td class="text-success fw-bold">@c.Montant.ToString("N2") DZD</td>
+                        <td>
+                            @{
+                                var (cls, icon, lbl) = c.Statut switch {
+                                    StatutColis.EnAttente => ("status-badge sb-attente", "hourglass-split", "En attente"),
+                                    StatutColis.EnCours   => ("status-badge sb-cours",   "truck",           "En cours"),
+                                    StatutColis.Livre     => ("status-badge sb-livre",   "check-circle-fill","Livré"),
+                                    _                     => ("status-badge sb-attente",  "question",        "Inconnu")
+                                };
+                            }
+                            <span class="@cls badge-statut"><i class="bi bi-@icon me-1"></i>@lbl</span>
+                        </td>
+                        <td class="text-center">
+                            <form class="form-statut d-flex gap-1 justify-content-center" data-id="@c.Id">
+                                @Html.AntiForgeryToken()
+                                <select name="statut" class="form-select form-select-sm" style="max-width:130px">
+                                    <option value="EnAttente" selected="@(c.Statut == StatutColis.EnAttente)">En attente</option>
+                                    <option value="EnCours" selected="@(c.Statut == StatutColis.EnCours)">En cours</option>
+                                    <option value="Livre" selected="@(c.Statut == StatutColis.Livre)">Livré</option>
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-warning text-white" title="Mettre à jour"><i class="bi bi-arrow-clockwise"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="8">
+                        <div class="empty-state">
+                            <div class="empty-icon"><i class="bi bi-truck"></i></div>
+                            <h6>Aucun colis</h6>
+                            <p>Aucune livraison ne vous est assignée pour le moment.</p>
+                        </div>
+                    </td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Toast notification -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 1080">
+    <div id="toastStatut" class="toast align-items-center text-white bg-success border-0" role="alert">
+        <div class="d-flex">
+            <div class="toast-body"><i class="bi bi-check-circle me-2"></i><span id="toastMsg">OK</span></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+(function () {
+    const toastEl = document.getElementById('toastStatut');
+    const toastMsg = document.getElementById('toastMsg');
+    const toast = new bootstrap.Toast(toastEl, { delay: 2500 });
+
+    function showToast(msg, ok = true) {
+        toastMsg.textContent = msg;
+        toastEl.classList.remove('bg-success', 'bg-danger');
+        toastEl.classList.add(ok ? 'bg-success' : 'bg-danger');
+        toast.show();
+    }
+
+    function badgeFor(statut) {
+        switch (statut) {
+            case 'EnAttente': return { cls: 'status-badge sb-attente badge-statut', icon: 'hourglass-split', label: 'En attente' };
+            case 'EnCours':   return { cls: 'status-badge sb-cours badge-statut',   icon: 'truck',           label: 'En cours'   };
+            case 'Livre':     return { cls: 'status-badge sb-livre badge-statut',   icon: 'check-circle-fill', label: 'Livré'   };
+            default:          return { cls: 'status-badge sb-attente badge-statut', icon: 'question',        label: 'Inconnu'  };
+        }
+    }
+
+    document.querySelectorAll('.form-statut').forEach(form => {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = form.dataset.id;
+            const statut = form.querySelector('select[name="statut"]').value;
+            const token = form.querySelector('input[name="__RequestVerificationToken"]').value;
+            const btn = form.querySelector('button[type="submit"]');
+            const oldHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+            try {
+                const fd = new FormData();
+                fd.append('id', id);
+                fd.append('statut', statut);
+                fd.append('__RequestVerificationToken', token);
+                const res = await fetch('@Url.Action("ChangerStatut", "MesLivraisons")', {
+                    method: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    body: fd
+                });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+                if (!data.success) throw new Error(data.message || 'Erreur');
+
+                // Mise à jour du badge dans la même ligne
+                const row = document.querySelector(`tr[data-row-id="${id}"]`);
+                const badge = row?.querySelector('.badge-statut');
+                if (badge) {
+                    const b = badgeFor(data.statut);
+                    badge.className = b.cls;
+                    badge.innerHTML = `<i class="bi bi-${b.icon} me-1"></i>${b.label}`;
+                }
+                // Mise à jour des KPIs
+                if (data.counts) {
+                    document.getElementById('kpi-total')?.replaceChildren(document.createTextNode(data.counts.total));
+                    document.getElementById('kpi-attente')?.replaceChildren(document.createTextNode(data.counts.enAttente));
+                    document.getElementById('kpi-cours')?.replaceChildren(document.createTextNode(data.counts.enCours));
+                    document.getElementById('kpi-livres')?.replaceChildren(document.createTextNode(data.counts.livres));
+                }
+                showToast(data.message, true);
+            } catch (err) {
+                showToast('Erreur : ' + err.message, false);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = oldHtml;
+            }
+        });
+    });
+})();
+</script>
+}

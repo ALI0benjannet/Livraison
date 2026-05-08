@@ -1,47 +1,32 @@
+ï»¿@model Vehicule
 @{
-    ViewData["Title"] = "Nouveau véhicule";
+    ViewData["Title"] = "Nouveau vÃ©hicule";
 }
 <div class="page-header">
-    <h2><i class="bi bi-plus-circle me-2 text-primary"></i>Nouveau véhicule</h2>
+    <h2><i class="bi bi-truck me-2" style="color:#8b5cf6"></i>Nouveau vÃ©hicule</h2>
     <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left me-1"></i>Retour</a>
 </div>
 <div class="form-card">
     <form asp-action="Create" method="post">
-        <div class="mb-3">
-            <label class="form-label fw-semibold">Type de véhicule <span class="text-danger">*</span></label>
-            <select name="type" class="form-select" id="typeSelect" onchange="toggleFields()">
-                <option value="Camion">Camion</option>
-                <option value="Voiture">Voiture</option>
-            </select>
-        </div>
+        <div asp-validation-summary="All" class="alert alert-danger py-2 mb-3"></div>
         <div class="row g-3">
             <div class="col-md-6">
-                <label class="form-label">Marque</label>
-                <input name="Marque" class="form-control" placeholder="Ex: Mercedes" />
+                <label asp-for="Marque" class="form-label">Marque <span class="text-danger">*</span></label>
+                <input asp-for="Marque" class="form-control" placeholder="Ex: Renault" />
+                <span asp-validation-for="Marque" class="text-danger small"></span>
             </div>
             <div class="col-md-6">
-                <label class="form-label">Matricule</label>
-                <input name="Matricule" class="form-control" placeholder="Ex: 123-ALG-16" />
+                <label asp-for="Matricule" class="form-label">Matricule <span class="text-danger">*</span></label>
+                <input asp-for="Matricule" class="form-control font-monospace" placeholder="Ex: 12345-001-16" />
+                <span asp-validation-for="Matricule" class="text-danger small"></span>
             </div>
             <div class="col-md-6">
-                <label class="form-label">Couleur</label>
-                <input name="Couleur" class="form-control" placeholder="Ex: Blanc" />
+                <label asp-for="Couleur" class="form-label">Couleur</label>
+                <input asp-for="Couleur" class="form-control" placeholder="Ex: Blanc" />
             </div>
             <div class="col-md-6">
-                <label class="form-label">Vitesse limite (km/h)</label>
-                <input name="VitesseLimite" type="number" class="form-control" placeholder="120" />
-            </div>
-            <div class="col-md-6" id="camionFields">
-                <label class="form-label">Capacité (tonnes)</label>
-                <input name="Capacite" type="number" class="form-control" placeholder="0" />
-            </div>
-            <div class="col-md-6" id="camionFields2">
-                <label class="form-label">Nombre d'essieux</label>
-                <input name="NbrEssieux" type="number" class="form-control" placeholder="0" />
-            </div>
-            <div class="col-md-6 d-none" id="voitureFields">
-                <label class="form-label">Nombre de places</label>
-                <input name="NbrPlaces" type="number" class="form-control" placeholder="0" />
+                <label asp-for="VitesseLimite" class="form-label">Vitesse limite (km/h)</label>
+                <input asp-for="VitesseLimite" class="form-control" placeholder="Ex: 120" />
             </div>
         </div>
         <div class="mt-4 d-flex gap-2">
@@ -50,14 +35,4 @@
         </div>
     </form>
 </div>
-@section Scripts {
-<script>
-function toggleFields() {
-    const t = document.getElementById('typeSelect').value;
-    document.getElementById('camionFields').classList.toggle('d-none', t !== 'Camion');
-    document.getElementById('camionFields2').classList.toggle('d-none', t !== 'Camion');
-    document.getElementById('voitureFields').classList.toggle('d-none', t !== 'Voiture');
-}
-toggleFields();
-</script>
-}
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

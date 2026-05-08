@@ -1,4 +1,4 @@
-@model Livreur
+﻿@model Livreur
 @{
     ViewData["Title"] = "Nouveau livreur";
 }
@@ -12,24 +12,22 @@
         <div class="row g-3">
             <div class="col-md-6">
                 <label asp-for="CIN" class="form-label">CIN <span class="text-danger">*</span></label>
-                <input asp-for="CIN" class="form-control" placeholder="Ex: 123456789" />
+                <input asp-for="CIN" class="form-control font-monospace" placeholder="Ex: 12345678" />
                 <span asp-validation-for="CIN" class="text-danger small"></span>
             </div>
             <div class="col-md-6">
                 <label asp-for="RaisonSocial" class="form-label">Raison sociale</label>
-                <input asp-for="RaisonSocial" class="form-control" placeholder="Nom de l'entreprise" />
+                <input asp-for="RaisonSocial" class="form-control" placeholder="Nom / entreprise" />
             </div>
             <div class="col-md-6">
                 <label asp-for="Ville" class="form-label">Ville</label>
-                <input asp-for="Ville" class="form-control" placeholder="Ex: Oran" />
+                <input asp-for="Ville" class="form-control" placeholder="Ex: Alger" />
             </div>
             <div class="col-md-6">
-                <label asp-for="CodePostal" class="form-label">Code postal</label>
-                <input asp-for="CodePostal" class="form-control" placeholder="Ex: 31000" />
-            </div>
-            <div class="col-12">
-                <label asp-for="VehiculeId" class="form-label">V�hicule assign�</label>
-                <select asp-for="VehiculeId" asp-items="ViewBag.VehiculeId" class="form-select"><option value="">-- Aucun --</option></select>
+                <label asp-for="VehiculeId" class="form-label">Véhicule assigné</label>
+                <select asp-for="VehiculeId" asp-items="ViewBag.VehiculeId" class="form-select">
+                    <option value="">— Aucun —</option>
+                </select>
             </div>
         </div>
         <div class="mt-4 d-flex gap-2">

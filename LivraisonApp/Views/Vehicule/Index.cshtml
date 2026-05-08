@@ -1,40 +1,58 @@
-@model IEnumerable<Vehicule>
+﻿@model IEnumerable<Vehicule>
 @{
-    ViewData["Title"] = "V�hicules";
+    ViewData["Title"] = "Véhicules";
 }
 <div class="page-header">
-    <h2><i class="bi bi-truck me-2 text-purple" style="color:#8b5cf6"></i>Gestion des v�hicules</h2>
-    <a class="btn btn-primary" asp-action="Create"><i class="bi bi-plus-lg me-1"></i>Nouveau v�hicule</a>
+    <h2><i class="bi bi-truck me-2" style="color:#8b5cf6"></i>Gestion des véhicules</h2>
+    <a class="btn btn-primary" asp-action="Create"><i class="bi bi-plus-lg me-1"></i>Nouveau véhicule</a>
 </div>
 <div class="card">
     <div class="card-body p-0">
         <table class="table table-hover mb-0" id="dataTable">
             <thead>
-                <tr><th>Type</th><th>Marque</th><th>Matricule</th><th>Couleur</th><th>Vitesse limite</th><th>Sp�cifique</th><th>Actions</th></tr>
+                <tr><th>Type</th><th>Marque</th><th>Matricule</th><th>Couleur</th><th>Vitesse limite</th><th>Spécifique</th><th class="text-center">Actions</th></tr>
             </thead>
             <tbody>
                 @foreach (var v in Model)
                 {
+                    var isCamion = v.GetType().Name == "Camion";
                     <tr>
                         <td>
-                            <span class="badge-type @(v.GetType().Name == "Camion" ? "badge-camion" : "badge-voiture")">
-                                <i class="bi bi-truck me-1"></i>@v.GetType().Name
+                            <span class="badge-type @(isCamion ? "badge-camion" : "badge-voiture")">
+                                <i class="bi bi-@(isCamion ? "truck" : "car-front") me-1"></i>@(isCamion ? "Camion" : "Voiture")
                             </span>
                         </td>
                         <td class="fw-semibold">@v.Marque</td>
-                        <td><code>@v.Matricule</code></td>
-                        <td>@v.Couleur</td>
-                        <td>@v.VitesseLimite km/h</td>
-                        <td class="text-muted small">
-                            @if (v is Camion c) { <span>Cap. @c.Capacite t � @c.NbrEssieux essieux</span> }
-                            @if (v is Voiture vo) { <span>@vo.NbrPlaces places</span> }
+                        <td><code class="text-primary">@v.Matricule</code></td>
+                        <td>
+                            <span class="d-flex align-items-center gap-1">
+                                <span style="width:12px;height:12px;border-radius:50%;background:@(v.Couleur.ToLower() switch { "rouge" => "#ef4444", "bleu" => "#3b82f6", "blanc" => "#e2e8f0", "gris" => "#94a3b8", "noir" => "#1e293b", _ => "#94a3b8" });display:inline-block;border:1px solid rgba(0,0,0,.1)"></span>
+                                @v.Couleur
+                            </span>
                         </td>
-                        <td class="action-links">
-                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@v.Id"><i class="bi bi-eye"></i></a>
-                            <a class="btn btn-sm btn-outline-warning" asp-action="Edit" asp-route-id="@v.Id"><i class="bi bi-pencil"></i></a>
-                            <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@v.Id"><i class="bi bi-trash"></i></a>
+                        <td><i class="bi bi-speedometer me-1 text-muted"></i>@v.VitesseLimite km/h</td>
+                        <td class="text-muted small">
+                            @if (v is Camion c) { <span><i class="bi bi-archive me-1"></i>@c.Capacite t — @c.NbrEssieux essieux</span> }
+                            @if (v is Voiture vo) { <span><i class="bi bi-people me-1"></i>@vo.NbrPlaces places</span> }
+                        </td>
+                        <td class="text-center">
+                            <div class="action-links justify-content-center">
+                                <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@v.Id" title="Détails"><i class="bi bi-eye"></i></a>
+                                <a class="btn btn-sm btn-outline-warning" asp-action="Edit" asp-route-id="@v.Id" title="Modifier"><i class="bi bi-pencil"></i></a>
+                                <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@v.Id" title="Supprimer"><i class="bi bi-trash"></i></a>
+                            </div>
                         </td>
                     </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="7">
+                        <div class="empty-state">
+                            <div class="empty-icon"><i class="bi bi-truck"></i></div>
+                            <h6>Aucun véhicule</h6>
+                            <p>Aucun véhicule enregistré pour le moment.</p>
+                        </div>
+                    </td></tr>
                 }
             </tbody>
         </table>

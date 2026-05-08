@@ -35,12 +35,16 @@ public class DashboardController : Controller
         var now = DateTime.UtcNow;
         var start = new DateTime(now.Year, now.Month, 1).AddMonths(-11);
 
-        var colisByMonth = await _context.Colis
+        var colisRaw = await _context.Colis
             .Where(c => c.DateLivraison >= start)
-            .GroupBy(c => new { c.DateLivraison.Year, c.DateLivraison.Month })
-            .Select(g => new { label = $"{g.Key.Month:D2}/{g.Key.Year}", total = g.Count(), revenue = g.Sum(x => x.Montant) })
-            .OrderBy(x => x.label)
+            .Select(c => new { c.DateLivraison.Year, c.DateLivraison.Month, c.Montant })
             .ToListAsync();
+
+        var colisByMonth = colisRaw
+            .GroupBy(c => new { c.Year, c.Month })
+            .OrderBy(g => g.Key.Year).ThenBy(g => g.Key.Month)
+            .Select(g => new { label = $"{g.Key.Month:D2}/{g.Key.Year}", total = g.Count(), revenue = g.Sum(x => x.Montant) })
+            .ToList();
 
         var camions  = await _context.Camions.CountAsync();
         var voitures = await _context.Voitures.CountAsync();

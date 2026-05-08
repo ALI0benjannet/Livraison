@@ -1,4 +1,4 @@
-@model IEnumerable<Client>
+﻿@model IEnumerable<Client>
 @{
     ViewData["Title"] = "Clients";
 }
@@ -11,25 +11,45 @@
         <table class="table table-hover mb-0" id="dataTable">
             <thead>
                 <tr>
-                    <th>#</th><th>Nom</th><th>Pr�nom</th><th>Ville</th><th>Code postal</th><th>Nb colis</th><th>Actions</th>
+                    <th>#</th><th>Client</th><th>Ville</th><th>Code postal</th><th>Nb colis</th><th class="text-center">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var c in Model)
                 {
                     <tr>
-                        <td>@c.Id</td>
-                        <td class="fw-semibold">@c.Nom</td>
-                        <td>@c.Prenom</td>
+                        <td class="text-muted">@c.Id</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="avatar avatar-green" style="width:30px;height:30px;font-size:.65rem">
+                                    @(c.Nom?.Length > 0 ? c.Nom[0].ToString().ToUpper() : "?")
+                                </div>
+                                <div>
+                                    <div class="fw-semibold">@c.Nom @c.Prenom</div>
+                                </div>
+                            </div>
+                        </td>
                         <td><i class="bi bi-geo-alt me-1 text-muted"></i>@c.Ville</td>
                         <td>@c.CodePostal</td>
                         <td><span class="badge bg-primary">@c.Colis.Count</span></td>
-                        <td class="action-links">
-                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@c.Id"><i class="bi bi-eye"></i></a>
-                            <a class="btn btn-sm btn-outline-warning" asp-action="Edit" asp-route-id="@c.Id"><i class="bi bi-pencil"></i></a>
-                            <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@c.Id"><i class="bi bi-trash"></i></a>
+                        <td class="text-center">
+                            <div class="action-links justify-content-center">
+                                <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@c.Id" title="Détails"><i class="bi bi-eye"></i></a>
+                                <a class="btn btn-sm btn-outline-warning" asp-action="Edit" asp-route-id="@c.Id" title="Modifier"><i class="bi bi-pencil"></i></a>
+                                <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@c.Id" title="Supprimer"><i class="bi bi-trash"></i></a>
+                            </div>
                         </td>
                     </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="6">
+                        <div class="empty-state">
+                            <div class="empty-icon"><i class="bi bi-people"></i></div>
+                            <h6>Aucun client</h6>
+                            <p>Aucun client enregistré pour le moment.</p>
+                        </div>
+                    </td></tr>
                 }
             </tbody>
         </table>

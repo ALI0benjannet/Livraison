@@ -1,4 +1,5 @@
 ﻿@inject LivraisonApp.Data.AppDbContext _db
+@inject Microsoft.AspNetCore.Identity.UserManager<LivraisonApp.Models.ApplicationUser> _um
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -12,10 +13,13 @@
 </head>
 <body>
 @{
-    var isAuth  = User.Identity?.IsAuthenticated == true;
-    var isAdmin = User.IsInRole("Admin");
-    var ctrl    = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
-    var act     = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    var isAuth    = User.Identity?.IsAuthenticated == true;
+    var isAdmin   = User.IsInRole("Admin");
+    var isLivreur = User.IsInRole("Livreur");
+    var isClient  = User.IsInRole("Client");
+    var ctrl      = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var act       = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    LivraisonApp.Models.ApplicationUser? me = isAuth ? await _um.GetUserAsync(User) : null;
 
     int colisCount = 0, clientCount = 0, livreurCount = 0, vehiculeCount = 0, userCount = 0;
     int pendingCount = 0;
@@ -29,6 +33,11 @@
         pendingCount  = await _db.Colis.CountAsync(c => c.Statut == StatutColis.EnAttente);
     }
 
+    var roleLabel = isAdmin ? "Admin" : isLivreur ? "Livreur" : isClient ? "Client" : "Utilisateur";
+    var roleIcon  = isAdmin ? "bi-shield-fill" : isLivreur ? "bi-truck" : "bi-person";
+    var homeCtrl  = isAdmin ? "Dashboard" : isLivreur ? "MesLivraisons" : "User";
+    var homeAct   = isAdmin ? "Index"     : isLivreur ? "Index"         : "Colis";
+
     var ctrlLabel = ctrl switch {
         "Colis"          => "Colis",
         "Client"         => "Clients",
@@ -36,6 +45,7 @@
         "Vehicule"       => "Véhicules",
         "UserManagement" => "Utilisateurs",
         "User"           => "Espace client",
+        "MesLivraisons"  => "Mes livraisons",
         "Dashboard"      => "Tableau de bord",
         _                => ctrl
     };
@@ -50,7 +60,13 @@
 
 <!-- ── Topbar ── -->
 <header class="topbar">
-    <a class="topbar-brand" asp-controller="@(isAdmin ? "Dashboard" : "User")" asp-action="@(isAdmin ? "Index" : "Colis")">
+    @if (isAuth)
+    {
+        <button class="sidebar-toggle me-2" id="sidebarToggle" aria-label="Menu">
+            <i class="bi bi-list"></i>
+        </button>
+    }
+    <a class="topbar-brand" asp-controller="@homeCtrl" asp-action="@homeAct">
         <i class="bi bi-truck-front-fill"></i> LivraisonApp
     </a>
     <div class="topbar-user">
@@ -58,8 +74,7 @@
         {
             <span class="user-badge"><i class="bi bi-person-fill me-1"></i>@User.Identity!.Name</span>
             <span class="user-badge" style="background:rgba(255,255,255,.18)">
-                @if (isAdmin) { <i class="bi bi-shield-fill me-1"></i> } else { <i class="bi bi-person me-1"></i> }
-                @(isAdmin ? "Admin" : "Utilisateur")
+                <i class="bi @roleIcon me-1"></i>@roleLabel
             </span>
             <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
                 <button class="btn-logout"><i class="bi bi-box-arrow-right me-1"></i>Déconnexion</button>
@@ -78,7 +93,27 @@
     @if (isAuth)
     {
         <!-- ── Sidebar ── -->
-        <aside class="sidebar">
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        <aside class="sidebar" id="sidebar">
+            @if (isAuth)
+            {
+                <div class="sidebar-profile">
+                    @if (!string.IsNullOrEmpty(me?.PhotoUrl))
+                    {
+                        <img src="@me.PhotoUrl" class="sidebar-profile-photo" alt="profil" />
+                    }
+                    else
+                    {
+                        <div class="avatar @(isAdmin ? "" : isLivreur ? "avatar-orange" : "avatar-green")">
+                            @((me?.Prenom?.Length > 0 ? me.Prenom[0].ToString() : User.Identity!.Name?[0].ToString() ?? "U").ToUpper())
+                        </div>
+                    }
+                    <div class="sidebar-profile-info">
+                        <div class="sidebar-profile-name">@(string.IsNullOrEmpty(me?.Prenom) ? User.Identity!.Name : $"{me.Prenom} {me.Nom}")</div>
+                        <div class="sidebar-profile-role"><i class="bi @roleIcon me-1"></i>@roleLabel</div>
+                    </div>
+                </div>
+            }
             @if (isAdmin)
             {
                 <p class="sidebar-section">Navigation</p>
@@ -131,13 +166,24 @@
                     </li>
                 </ul>
             }
+            else if (isLivreur)
+            {
+                <p class="sidebar-section">Espace livreur</p>
+                <ul class="sidebar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link @(ctrl == "MesLivraisons" ? "active" : "")" asp-controller="MesLivraisons" asp-action="Index">
+                            <i class="bi bi-truck"></i> Mes livraisons
+                        </a>
+                    </li>
+                </ul>
+            }
             else
             {
                 <p class="sidebar-section">Mon espace</p>
                 <ul class="sidebar-nav">
                     <li class="nav-item">
                         <a class="nav-link @(ctrl == "User" && act == "Colis" ? "active" : "")" asp-controller="User" asp-action="Colis">
-                            <i class="bi bi-search"></i> Recherche colis
+                            <i class="bi bi-search"></i> Mes colis
                         </a>
                     </li>
                 </ul>
@@ -148,12 +194,12 @@
         <div class="main-with-sidebar">
             <main class="main-content">
                 @* Breadcrumb *@
-                @if (ctrl != "Dashboard" && ctrl != "Home")
+                @if (ctrl != "Dashboard" && ctrl != "Home" && ctrl != "MesLivraisons")
                 {
                     <nav aria-label="breadcrumb" class="breadcrumb-nav">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item">
-                                <a asp-controller="@(isAdmin ? "Dashboard" : "User")" asp-action="@(isAdmin ? "Index" : "Colis")">
+                                <a asp-controller="@homeCtrl" asp-action="@homeAct">
                                     <i class="bi bi-house-fill"></i>
                                 </a>
                             </li>
@@ -208,6 +254,22 @@
 <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
+<script>
+    (function(){
+        var btn = document.getElementById('sidebarToggle');
+        var sidebar = document.getElementById('sidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+        if (!btn || !sidebar) return;
+        btn.addEventListener('click', function(){
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        });
+        overlay.addEventListener('click', function(){
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        });
+    })();
+</script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

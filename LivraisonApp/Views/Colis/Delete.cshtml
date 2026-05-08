@@ -1,4 +1,4 @@
-@model Colis
+ï»¿@model Colis
 @{
     ViewData["Title"] = "Supprimer colis";
 }
@@ -9,16 +9,20 @@
 <div class="form-card" style="max-width:480px">
     <div class="alert alert-danger">
         <i class="bi bi-exclamation-triangle-fill me-2"></i>
-        Êtes-vous sûr de vouloir supprimer le colis <strong>#@Model?.Id — @Model?.Libelle</strong> ?
+        ÃŠtes-vous sÃ»r de vouloir supprimer le colis <strong>#@Model?.Id â€” @Model?.Libelle</strong> ?
+        <br><small class="mt-1 d-block opacity-75">Cette action est irrÃ©versible.</small>
     </div>
-    <dl class="row small">
-        <dt class="col-5 text-muted">Client</dt><dd class="col-7">@Model?.Client?.Nom @Model?.Client?.Prenom</dd>
-        <dt class="col-5 text-muted">Date livraison</dt><dd class="col-7">@Model?.DateLivraison.ToShortDateString()</dd>
-        <dt class="col-5 text-muted">Montant</dt><dd class="col-7">@Model?.Montant.ToString("N2") DZD</dd>
+    <dl class="row small mt-3">
+        <dt class="col-5 text-muted">Client</dt>
+        <dd class="col-7">@Model?.Client?.Nom @Model?.Client?.Prenom</dd>
+        <dt class="col-5 text-muted">Date livraison</dt>
+        <dd class="col-7">@Model?.DateLivraison.ToShortDateString()</dd>
+        <dt class="col-5 text-muted">Montant</dt>
+        <dd class="col-7 text-success fw-bold">@Model?.Montant.ToString("N2") DZD</dd>
     </dl>
     <form asp-action="Delete" method="post" class="d-flex gap-2 mt-3">
         <input type="hidden" asp-for="Id" />
         <button class="btn btn-danger"><i class="bi bi-trash me-1"></i>Confirmer la suppression</button>
-        <a class="btn btn-outline-secondary" asp-action="Index">Annuler</a>
+        <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-x me-1"></i>Annuler</a>
     </form>
 </div>

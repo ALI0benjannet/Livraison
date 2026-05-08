@@ -6,7 +6,7 @@ public enum StatutColis
 {
     [Display(Name = "En attente")] EnAttente = 0,
     [Display(Name = "En cours")]   EnCours   = 1,
-    [Display(Name = "Livré")]      Livre     = 2
+    [Display(Name = "Livrï¿½")]      Livre     = 2
 }
 
 public class Colis
@@ -16,14 +16,14 @@ public class Colis
     [Required]
     public DateTime DateLivraison { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Le montant doit être positif.")]
-    public double Montant { get; set; }
+    [Range(0, float.MaxValue, ErrorMessage = "Le montant doit Ãªtre positif.")]
+    public float Montant { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Le poids doit être positif.")]
-    public double Poids { get; set; }
+    [Range(0, float.MaxValue, ErrorMessage = "Le poids doit Ãªtre positif.")]
+    public float Poids { get; set; }
 
-    [Range(0, double.MaxValue, ErrorMessage = "Le volume doit être positif.")]
-    public double Volume { get; set; }
+    [Range(0, float.MaxValue, ErrorMessage = "Le volume doit Ãªtre positif.")]
+    public float Volume { get; set; }
 
     [MaxLength(200)]
     public string? Libelle { get; set; }

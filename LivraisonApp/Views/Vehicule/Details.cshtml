@@ -1,58 +1,59 @@
-@model Vehicule
+ï»¿@model Vehicule
 @{
-    ViewData["Title"] = "Détails véhicule";
-    var isCamion = Model is Camion;
-    var camion = Model as Camion;
-    var voiture = Model as Voiture;
+    ViewData["Title"] = "DÃ©tails vÃ©hicule";
+    var isCamion = Model?.GetType().Name == "Camion";
 }
 <div class="page-header">
-    <h2><i class="bi bi-truck me-2" style="color:#8b5cf6"></i>Détails véhicule</h2>
-    <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left me-1"></i>Retour</a>
-</div>
-<div class="form-card">
-    <div class="mb-3">
-        <span class="badge-type @(isCamion ? "badge-camion" : "badge-voiture") fs-6">
-            <i class="bi bi-truck me-1"></i>@Model?.GetType().Name
-        </span>
-    </div>
-    <div class="row g-3">
-        <div class="col-md-6">
-            <div class="text-muted small fw-semibold text-uppercase mb-1">Marque</div>
-            <div class="fs-5 fw-bold">@Model?.Marque</div>
-        </div>
-        <div class="col-md-6">
-            <div class="text-muted small fw-semibold text-uppercase mb-1">Matricule</div>
-            <div><code class="fs-6">@Model?.Matricule</code></div>
-        </div>
-        <div class="col-md-6">
-            <div class="text-muted small fw-semibold text-uppercase mb-1">Couleur</div>
-            <div>@Model?.Couleur</div>
-        </div>
-        <div class="col-md-6">
-            <div class="text-muted small fw-semibold text-uppercase mb-1">Vitesse limite</div>
-            <div>@Model?.VitesseLimite km/h</div>
-        </div>
-        @if (isCamion)
-        {
-            <div class="col-md-6">
-                <div class="text-muted small fw-semibold text-uppercase mb-1">Capacité</div>
-                <div>@camion?.Capacite tonnes</div>
-            </div>
-            <div class="col-md-6">
-                <div class="text-muted small fw-semibold text-uppercase mb-1">Nombre d'essieux</div>
-                <div>@camion?.NbrEssieux</div>
-            </div>
-        }
-        else
-        {
-            <div class="col-md-6">
-                <div class="text-muted small fw-semibold text-uppercase mb-1">Nombre de places</div>
-                <div>@voiture?.NbrPlaces</div>
-            </div>
-        }
-    </div>
-    <div class="mt-4 d-flex gap-2">
+    <h2><i class="bi bi-@(isCamion ? "truck" : "car-front") me-2" style="color:#8b5cf6"></i>DÃ©tails vÃ©hicule</h2>
+    <div class="d-flex gap-2">
         <a class="btn btn-warning text-white" asp-action="Edit" asp-route-id="@Model?.Id"><i class="bi bi-pencil me-1"></i>Modifier</a>
-        <a class="btn btn-danger" asp-action="Delete" asp-route-id="@Model?.Id"><i class="bi bi-trash me-1"></i>Supprimer</a>
+        <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left me-1"></i>Retour</a>
+    </div>
+</div>
+<div class="form-card" style="max-width:600px">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <div class="avatar" style="width:60px;height:60px;font-size:1.6rem;background:var(--purple-light);color:#8b5cf6">
+            <i class="bi bi-@(isCamion ? "truck" : "car-front")"></i>
+        </div>
+        <div>
+            <div class="fs-5 fw-bold">@Model?.Marque</div>
+            <code class="text-primary fs-6">@Model?.Matricule</code>
+        </div>
+    </div>
+    <div class="row g-2">
+        <div class="col-6">
+            <div class="detail-label">Type</div>
+            <div class="detail-value">
+                <span class="badge-type @(isCamion ? "badge-camion" : "badge-voiture")">
+                    <i class="bi bi-@(isCamion ? "truck" : "car-front") me-1"></i>@(isCamion ? "Camion" : "Voiture")
+                </span>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="detail-label">Couleur</div>
+            <div class="detail-value">@(Model?.Couleur ?? "â€”")</div>
+        </div>
+        <div class="col-6">
+            <div class="detail-label">Vitesse limite</div>
+            <div class="detail-value">@Model?.VitesseLimite km/h</div>
+        </div>
+        @if (Model is Camion c)
+        {
+            <div class="col-6">
+                <div class="detail-label">CapacitÃ©</div>
+                <div class="detail-value">@c.Capacite tonnes</div>
+            </div>
+            <div class="col-6">
+                <div class="detail-label">Nombre d'essieux</div>
+                <div class="detail-value">@c.NbrEssieux</div>
+            </div>
+        }
+        @if (Model is Voiture v)
+        {
+            <div class="col-6">
+                <div class="detail-label">Nombre de places</div>
+                <div class="detail-value">@v.NbrPlaces</div>
+            </div>
+        }
     </div>
 </div>

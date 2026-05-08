@@ -1,24 +1,25 @@
-@model Vehicule
+ï»¿@model Vehicule
 @{
-    ViewData["Title"] = "Supprimer véhicule";
+    ViewData["Title"] = "Supprimer vÃ©hicule";
 }
 <div class="page-header">
-    <h2><i class="bi bi-trash me-2 text-danger"></i>Supprimer véhicule</h2>
+    <h2><i class="bi bi-trash me-2 text-danger"></i>Supprimer vÃ©hicule</h2>
     <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left me-1"></i>Retour</a>
 </div>
 <div class="form-card" style="max-width:480px">
     <div class="alert alert-danger">
         <i class="bi bi-exclamation-triangle-fill me-2"></i>
-        Êtes-vous sûr de vouloir supprimer le véhicule <strong>@Model?.Marque — @Model?.Matricule</strong> ?
+        ÃŠtes-vous sÃ»r de vouloir supprimer le vÃ©hicule <strong>@Model?.Marque â€” @Model?.Matricule</strong> ?
+        <br><small class="mt-1 d-block opacity-75">Cette action est irrÃ©versible.</small>
     </div>
-    <dl class="row small">
+    <dl class="row small mt-3">
         <dt class="col-5 text-muted">Type</dt><dd class="col-7">@Model?.GetType().Name</dd>
-        <dt class="col-5 text-muted">Couleur</dt><dd class="col-7">@Model?.Couleur</dd>
+        <dt class="col-5 text-muted">Couleur</dt><dd class="col-7">@(Model?.Couleur ?? "â€”")</dd>
         <dt class="col-5 text-muted">Vitesse limite</dt><dd class="col-7">@Model?.VitesseLimite km/h</dd>
     </dl>
     <form asp-action="Delete" method="post" class="d-flex gap-2 mt-3">
         <input type="hidden" asp-for="Id" />
         <button class="btn btn-danger"><i class="bi bi-trash me-1"></i>Confirmer la suppression</button>
-        <a class="btn btn-outline-secondary" asp-action="Index">Annuler</a>
+        <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-x me-1"></i>Annuler</a>
     </form>
 </div>

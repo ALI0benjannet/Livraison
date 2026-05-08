@@ -1,32 +1,60 @@
-@model Client
+﻿@model Client
 @{
-    ViewData["Title"] = "D�tails client";
+    ViewData["Title"] = "Détails client";
 }
 <div class="page-header">
-    <h2><i class="bi bi-person me-2 text-success"></i>D�tails client</h2>
-    <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left me-1"></i>Retour</a>
+    <h2><i class="bi bi-person-circle me-2 text-success"></i>Détails client</h2>
+    <div class="d-flex gap-2">
+        <a class="btn btn-warning text-white" asp-action="Edit" asp-route-id="@Model?.Id"><i class="bi bi-pencil me-1"></i>Modifier</a>
+        <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left me-1"></i>Retour</a>
+    </div>
 </div>
-<div class="form-card">
-    <div class="row g-3">
-        <div class="col-md-6">
-            <div class="text-muted small fw-semibold text-uppercase mb-1">Nom complet</div>
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="form-card text-center">
+            <div class="avatar avatar-green mx-auto mb-3" style="width:64px;height:64px;font-size:1.5rem">
+                @(Model?.Nom?.Length > 0 ? Model.Nom[0].ToString().ToUpper() : "?")
+            </div>
             <div class="fs-5 fw-bold">@Model?.Nom @Model?.Prenom</div>
-        </div>
-        <div class="col-md-6">
-            <div class="text-muted small fw-semibold text-uppercase mb-1">Ville</div>
-            <div><i class="bi bi-geo-alt me-1 text-primary"></i>@(Model?.Ville ?? "�")</div>
-        </div>
-        <div class="col-md-6">
-            <div class="text-muted small fw-semibold text-uppercase mb-1">Code postal</div>
-            <div>@(Model?.CodePostal ?? "�")</div>
-        </div>
-        <div class="col-md-6">
-            <div class="text-muted small fw-semibold text-uppercase mb-1">Nombre de colis</div>
-            <div><span class="badge bg-primary fs-6">@Model?.Colis.Count</span></div>
+            <div class="text-muted small mt-1"><i class="bi bi-geo-alt me-1 text-primary"></i>@(Model?.Ville ?? "—")</div>
+            <div class="text-muted small"><i class="bi bi-mailbox me-1 text-primary"></i>@(Model?.CodePostal ?? "—")</div>
+            <div class="mt-3"><span class="badge bg-primary fs-6">@Model?.Colis.Count colis</span></div>
         </div>
     </div>
-    <div class="mt-4 d-flex gap-2">
-        <a class="btn btn-warning text-white" asp-action="Edit" asp-route-id="@Model?.Id"><i class="bi bi-pencil me-1"></i>Modifier</a>
-        <a class="btn btn-danger" asp-action="Delete" asp-route-id="@Model?.Id"><i class="bi bi-trash me-1"></i>Supprimer</a>
+    <div class="col-md-8">
+        <div class="form-card">
+            <h6 class="mb-3 text-muted text-uppercase" style="font-size:.7rem;letter-spacing:.1em">Colis associés</h6>
+            @if (Model?.Colis != null && Model.Colis.Any())
+            {
+                <table class="table table-sm table-hover">
+                    <thead><tr><th>#</th><th>Libellé</th><th>Statut</th><th>Montant</th></tr></thead>
+                    <tbody>
+                        @foreach (var c in Model.Colis)
+                        {
+                            <tr>
+                                <td class="text-muted">@c.Id</td>
+                                <td>@c.Libelle</td>
+                                <td>
+                                    @{
+                                        var (cls, icon, lbl) = c.Statut switch {
+                                            StatutColis.EnAttente => ("status-badge sb-attente", "hourglass-split", "En attente"),
+                                            StatutColis.EnCours   => ("status-badge sb-cours",   "truck",           "En cours"),
+                                            StatutColis.Livre     => ("status-badge sb-livre",   "check-circle-fill","Livré"),
+                                            _                     => ("status-badge sb-attente",  "question",        "Inconnu")
+                                        };
+                                    }
+                                    <span class="@cls"><i class="bi bi-@icon me-1"></i>@lbl</span>
+                                </td>
+                                <td class="text-success fw-bold">@c.Montant.ToString("N2") DZD</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="text-muted text-center py-3"><i class="bi bi-box-seam me-2"></i>Aucun colis associé</div>
+            }
+        </div>
     </div>
 </div>

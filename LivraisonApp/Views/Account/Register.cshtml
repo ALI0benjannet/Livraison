@@ -1,64 +1,145 @@
-@model RegisterViewModel
+﻿@model RegisterViewModel
 @{
-    ViewData["Title"] = "Inscription";
+    ViewData["Title"] = "Créer un compte";
     Layout = null;
 }
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Inscription � LivraisonApp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] — LivraisonApp</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-<body>
-<div class="auth-wrapper">
-    <div class="auth-card" style="max-width:460px">
-        <div class="auth-logo">
-            <i class="bi bi-truck-front-fill"></i>
-            <h2>LivraisonApp</h2>
-            <p>Cr�ez votre compte utilisateur</p>
-        </div>
-        <form asp-action="Register" method="post">
-            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 mb-3"></div>
-            <div class="mb-3">
-                <label asp-for="Login" class="form-label">Email / Identifiant</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-person"></i></span>
-                    <input asp-for="Login" class="form-control" placeholder="votre@email.com" />
+<body class="auth-body">
+    <div class="auth-shell">
+        <div class="auth-card auth-card-wide">
+            <div class="auth-icon"><i class="bi bi-person-plus"></i></div>
+            <h3 class="text-center mb-1 fw-bold">Créer un compte</h3>
+            <p class="text-center text-muted mb-4">Rejoignez LivraisonApp en quelques clics</p>
+
+            <form asp-action="Register" method="post" enctype="multipart/form-data" novalidate>
+                <div asp-validation-summary="All" class="alert alert-danger py-2 mb-3"></div>
+
+                <!-- Sélecteur de rôle -->
+                <div class="role-switch mb-3">
+                    <input type="radio" class="btn-check" name="Role" id="r-client" value="Client" checked />
+                    <label class="btn btn-outline-primary flex-fill" for="r-client"><i class="bi bi-person me-1"></i>Je suis un Client</label>
+
+                    <input type="radio" class="btn-check" name="Role" id="r-livreur" value="Livreur" />
+                    <label class="btn btn-outline-warning flex-fill" for="r-livreur"><i class="bi bi-truck me-1"></i>Je suis un Livreur</label>
                 </div>
-                <span asp-validation-for="Login" class="text-danger small"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Password" class="form-label">Mot de passe</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                    <input asp-for="Password" class="form-control" placeholder="Min. 6 caract�res" />
+
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted">Nom</label>
+                        <input asp-for="Nom" class="form-control" placeholder="Nom" />
+                        <span asp-validation-for="Nom" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted">Prénom</label>
+                        <input asp-for="Prenom" class="form-control" placeholder="Prénom" />
+                        <span asp-validation-for="Prenom" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted">E-mail</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="bi bi-envelope"></i></span>
+                            <input asp-for="Login" class="form-control" placeholder="email@exemple.com" autocomplete="email" />
+                        </div>
+                        <span asp-validation-for="Login" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted">Téléphone</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="bi bi-telephone"></i></span>
+                            <input asp-for="Telephone" class="form-control" placeholder="0550 12 34 56" />
+                        </div>
+                        <span asp-validation-for="Telephone" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted">Date de naissance</label>
+                        <input asp-for="DateNaissance" type="date" class="form-control" />
+                        <span asp-validation-for="DateNaissance" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted">Adresse</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="bi bi-geo-alt"></i></span>
+                            <input asp-for="Adresse" class="form-control" placeholder="Rue, ville..." />
+                        </div>
+                        <span asp-validation-for="Adresse" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Champs spécifiques Livreur -->
+                    <div class="col-md-6 livreur-only" style="display:none">
+                        <label class="form-label small text-muted">CIN</label>
+                        <input asp-for="CIN" class="form-control font-monospace" placeholder="12345678" />
+                    </div>
+                    <div class="col-md-6 livreur-only" style="display:none">
+                        <label class="form-label small text-muted">Ville</label>
+                        <input asp-for="Ville" class="form-control" placeholder="Alger" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted">Mot de passe</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="bi bi-lock"></i></span>
+                            <input asp-for="Password" type="password" class="form-control" autocomplete="new-password" id="pwd1" />
+                            <button type="button" class="btn btn-outline-secondary password-toggle" data-target="pwd1"><i class="bi bi-eye"></i></button>
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted">Confirmer mot de passe</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="bi bi-lock-fill"></i></span>
+                            <input asp-for="ConfirmPassword" type="password" class="form-control" autocomplete="new-password" id="pwd2" />
+                            <button type="button" class="btn btn-outline-secondary password-toggle" data-target="pwd2"><i class="bi bi-eye"></i></button>
+                        </div>
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label small text-muted">Photo de profil (optionnel)</label>
+                        <input asp-for="Photo" type="file" class="form-control" accept="image/*" />
+                    </div>
                 </div>
-                <span asp-validation-for="Password" class="text-danger small"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="ConfirmPassword" class="form-label">Confirmer le mot de passe</label>
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                    <input asp-for="ConfirmPassword" class="form-control" placeholder="R�p�tez le mot de passe" />
+
+                <button class="btn btn-primary w-100 mt-4 py-2 fw-bold"><i class="bi bi-check-lg me-1"></i>Créer mon compte</button>
+
+                <div class="text-center mt-3">
+                    <span class="text-muted small">Déjà un compte ?</span>
+                    <a asp-action="Login" class="fw-semibold">Se connecter</a>
                 </div>
-                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
-            </div>
-            <input type="hidden" asp-for="Role" value="User" />
-            <button class="btn btn-primary w-100 py-2"><i class="bi bi-person-plus me-2"></i>S'inscrire</button>
-        </form>
-        <hr class="my-3" />
-        <div class="text-center">
-            <span class="text-muted small">D�j� un compte ?</span>
-            <a asp-action="Login" class="ms-1 fw-semibold">Se connecter</a>
+            </form>
         </div>
     </div>
-</div>
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        // Toggle visibility password
+        document.querySelectorAll('.password-toggle').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const t = document.getElementById(btn.dataset.target);
+                t.type = t.type === 'password' ? 'text' : 'password';
+                btn.querySelector('i').className = t.type === 'password' ? 'bi bi-eye' : 'bi bi-eye-slash';
+            });
+        });
+        // Show/hide livreur fields
+        const livreurOnly = document.querySelectorAll('.livreur-only');
+        document.querySelectorAll('input[name="Role"]').forEach(r => {
+            r.addEventListener('change', () => {
+                const show = document.getElementById('r-livreur').checked;
+                livreurOnly.forEach(el => el.style.display = show ? '' : 'none');
+            });
+        });
+    </script>
 </body>
 </html>

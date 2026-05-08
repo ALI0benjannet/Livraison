@@ -29,8 +29,17 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Account/Login";
+    options.LoginPath        = "/Account/Login";
     options.AccessDeniedPath = "/Account/Login";
+    options.ExpireTimeSpan   = TimeSpan.FromHours(8);
+    options.SlidingExpiration = true;
+    options.Cookie.Name      = "LivraisonApp.Auth";
+    options.Cookie.HttpOnly  = true;
+    options.Cookie.SameSite  = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
+    // En dev (HTTP), ne pas exiger Secure sinon le cookie n'est jamais envoyé.
+    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
+        ? Microsoft.AspNetCore.Http.CookieSecurePolicy.None
+        : Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
 });
 
 builder.Services.AddScoped<IColisRepository, ColisRepository>();
@@ -59,9 +68,9 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
+    app.UseHttpsRedirection();
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();

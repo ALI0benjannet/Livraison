@@ -1,4 +1,4 @@
-@model IEnumerable<Livreur>
+ï»¿@model IEnumerable<Livreur>
 @{
     ViewData["Title"] = "Livreurs";
 }
@@ -10,31 +10,43 @@
     <div class="card-body p-0">
         <table class="table table-hover mb-0" id="dataTable">
             <thead>
-                <tr><th>CIN</th><th>Raison sociale</th><th>Ville</th><th>Véhicule</th><th>Nb colis</th><th>Actions</th></tr>
+                <tr><th>CIN</th><th>Raison sociale</th><th>Ville</th><th>VÃ©hicule</th><th>Nb colis</th><th class="text-center">Actions</th></tr>
             </thead>
             <tbody>
                 @foreach (var l in Model)
                 {
                     <tr>
-                        <td class="fw-semibold">@l.CIN</td>
-                        <td>@(l.RaisonSocial ?? "—")</td>
+                        <td class="fw-semibold font-monospace">@l.CIN</td>
+                        <td>@(l.RaisonSocial ?? "â€”")</td>
                         <td><i class="bi bi-geo-alt me-1 text-muted"></i>@l.Ville</td>
                         <td>
                             @if (l.Vehicule != null)
                             {
                                 <span class="badge-type @(l.Vehicule.GetType().Name == "Camion" ? "badge-camion" : "badge-voiture")">
-                                    <i class="bi bi-truck me-1"></i>@l.Vehicule.Matricule
+                                    <i class="bi bi-@(l.Vehicule.GetType().Name == "Camion" ? "truck" : "car-front") me-1"></i>@l.Vehicule.Matricule
                                 </span>
                             }
-                            else { <span class="text-muted">—</span> }
+                            else { <span class="text-muted small">Aucun</span> }
                         </td>
                         <td><span class="badge bg-primary">@l.Colis.Count</span></td>
-                        <td class="action-links">
-                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@l.Id"><i class="bi bi-eye"></i></a>
-                            <a class="btn btn-sm btn-outline-warning" asp-action="Edit" asp-route-id="@l.Id"><i class="bi bi-pencil"></i></a>
-                            <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@l.Id"><i class="bi bi-trash"></i></a>
+                        <td class="text-center">
+                            <div class="action-links justify-content-center">
+                                <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@l.Id" title="DÃ©tails"><i class="bi bi-eye"></i></a>
+                                <a class="btn btn-sm btn-outline-warning" asp-action="Edit" asp-route-id="@l.Id" title="Modifier"><i class="bi bi-pencil"></i></a>
+                                <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@l.Id" title="Supprimer"><i class="bi bi-trash"></i></a>
+                            </div>
                         </td>
                     </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="6">
+                        <div class="empty-state">
+                            <div class="empty-icon"><i class="bi bi-person-badge"></i></div>
+                            <h6>Aucun livreur</h6>
+                            <p>Aucun livreur enregistrÃ© pour le moment.</p>
+                        </div>
+                    </td></tr>
                 }
             </tbody>
         </table>

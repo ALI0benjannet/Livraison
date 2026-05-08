@@ -4,8 +4,8 @@ namespace LivraisonApp.ViewModels;
 
 public class ColisSearchViewModel
 {
-    public double?      PrixMin       { get; set; }
-    public double?      PrixMax       { get; set; }
+    public float?       PrixMin       { get; set; }
+    public float?       PrixMax       { get; set; }
     public DateTime?    DateLivraison { get; set; }
     public string?      Libelle       { get; set; }
     public string?      Ville         { get; set; }

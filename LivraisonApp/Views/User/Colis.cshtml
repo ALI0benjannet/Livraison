@@ -1,153 +1,114 @@
+ï»¿@using LivraisonApp.Models
+@using LivraisonApp.ViewModels
 @model IEnumerable<Colis>
 @{
-    ViewData["Title"] = "Recherche colis";
-    var s = ViewBag.Search as ColisSearchViewModel;
+    ViewData["Title"] = "Mes colis";
+    var s = ViewBag.Search as ColisSearchViewModel ?? new ColisSearchViewModel();
+    var livreurInfos = ViewBag.LivreurInfos as IDictionary<int, object>;
+    string? PhoneOf(int id) {
+        if (livreurInfos != null && livreurInfos.TryGetValue(id, out var o))
+            return (string?)o.GetType().GetProperty("PhoneNumber")?.GetValue(o);
+        return null;
+    }
 }
+
 <div class="page-header">
-    <h2><i class="bi bi-search me-2 text-primary"></i>Recherche de colis</h2>
+    <h2><i class="bi bi-box-seam me-2 text-primary"></i>Mes colis</h2>
 </div>
 
-<div class="search-card">
-    <form method="get" class="row g-2 align-items-end">
-        <div class="col-md-2">
-            <label class="form-label small fw-bold">Prix min (DZD)</label>
-            <input class="form-control" name="PrixMin" value="@s?.PrixMin" placeholder="0" type="number" step="0.01" />
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-warning"><i class="bi bi-exclamation-triangle me-1"></i>@TempData["Error"]</div>
+}
+
+<div class="form-card mb-3">
+    <form method="get" asp-action="Colis" class="row g-2 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label small text-muted">LibellÃ©</label>
+            <input type="text" name="Libelle" value="@s.Libelle" class="form-control" placeholder="Rechercher un libellÃ©..." />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small text-muted">Livreur (nom / CIN)</label>
+            <input type="text" name="Livreur" value="@s.Livreur" class="form-control" placeholder="Express, 12345..." />
         </div>
         <div class="col-md-2">
-            <label class="form-label small fw-bold">Prix max (DZD)</label>
-            <input class="form-control" name="PrixMax" value="@s?.PrixMax" placeholder="999999" type="number" step="0.01" />
+            <label class="form-label small text-muted">Prix min (DZD)</label>
+            <input type="number" step="0.01" name="PrixMin" value="@s.PrixMin" class="form-control" />
         </div>
         <div class="col-md-2">
-            <label class="form-label small fw-bold">Date livraison</label>
-            <input class="form-control" name="DateLivraison" value="@s?.DateLivraison?.ToString("yyyy-MM-dd")" type="date" />
+            <label class="form-label small text-muted">Prix max (DZD)</label>
+            <input type="number" step="0.01" name="PrixMax" value="@s.PrixMax" class="form-control" />
         </div>
         <div class="col-md-2">
-            <label class="form-label small fw-bold">Libellé</label>
-            <input class="form-control" name="Libelle" value="@s?.Libelle" placeholder="Mot-clé..." />
-        </div>
-        <div class="col-md-2">
-            <label class="form-label small fw-bold">Statut</label>
-            <select class="form-select" name="Statut">
-                <option value="">-- Tous --</option>
-                <option value="EnAttente" selected="@(s?.Statut == StatutColis.EnAttente)">? En attente</option>
-                <option value="EnCours"   selected="@(s?.Statut == StatutColis.EnCours)">?? En cours</option>
-                <option value="Livre"     selected="@(s?.Statut == StatutColis.Livre)">? Livré</option>
+            <label class="form-label small text-muted">Statut</label>
+            <select name="Statut" class="form-select">
+                <option value="">â€” Tous â€”</option>
+                <option value="EnAttente" selected="@(s.Statut == StatutColis.EnAttente)">En attente</option>
+                <option value="EnCours" selected="@(s.Statut == StatutColis.EnCours)">En cours</option>
+                <option value="Livre" selected="@(s.Statut == StatutColis.Livre)">LivrÃ©</option>
             </select>
         </div>
-        <div class="col-md-1">
-            <label class="form-label small fw-bold">Ville</label>
-            <input class="form-control" name="Ville" value="@s?.Ville" placeholder="Alger" />
+        <div class="col-md-3">
+            <label class="form-label small text-muted">Date de livraison</label>
+            <input type="date" name="DateLivraison" value="@(s.DateLivraison?.ToString("yyyy-MM-dd"))" class="form-control" />
         </div>
-        <div class="col-md-1 d-flex gap-1 align-items-end">
-            <button class="btn btn-primary flex-fill"><i class="bi bi-search"></i></button>
-            <a class="btn btn-outline-secondary" asp-action="Colis"><i class="bi bi-x"></i></a>
+        <div class="col-md-9 d-flex gap-2 justify-content-end">
+            <button class="btn btn-primary"><i class="bi bi-search me-1"></i>Rechercher</button>
+            <a asp-action="Colis" class="btn btn-outline-secondary"><i class="bi bi-x-lg me-1"></i>RÃ©initialiser</a>
         </div>
     </form>
 </div>
 
 <div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <span><i class="bi bi-list-ul me-2"></i>Résultats</span>
-        <span class="badge bg-primary">@Model.Count() colis trouvé(s)</span>
-    </div>
     <div class="card-body p-0">
         <table class="table table-hover mb-0">
             <thead>
-                <tr><th>Libellé</th><th>Statut</th><th>Date</th><th>Montant</th><th>Client</th><th>Ville</th><th></th></tr>
+                <tr>
+                    <th>#</th><th>LibellÃ©</th><th>Statut</th><th>Date</th><th>Montant</th><th>Livreur</th><th>TÃ©l. livreur</th><th class="text-center">Action</th>
+                </tr>
             </thead>
             <tbody>
                 @foreach (var c in Model)
                 {
-                    var (cls2, ico2, lbl2) = c.Statut switch {
-                            StatutColis.EnCours => ("status-en-cours", "bi-truck", "En cours"),
-                            StatutColis.Livre   => ("status-livre",    "bi-check-circle-fill", "Livré"),
-                            _                   => ("status-en-attente", "bi-hourglass-split", "En attente")
-                        };
                     <tr>
-                        <td class="fw-semibold">@(c.Libelle ?? "—")</td>
-                        <td><span class="status-badge @cls2"><i class="bi @ico2 me-1"></i>@lbl2</span></td>
-                        <td><i class="bi bi-calendar3 me-1 text-muted"></i>@c.DateLivraison.ToShortDateString()</td>
-                        <td class="text-success fw-semibold">@c.Montant.ToString("N2") DZD</td>
-                        <td><i class="bi bi-person me-1 text-muted"></i>@c.Client?.Nom @c.Client?.Prenom</td>
-                        <td><i class="bi bi-geo-alt me-1 text-muted"></i>@c.Client?.Ville</td>
-                        <td><a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@c.Id"><i class="bi bi-eye"></i></a></td>
+                        <td class="text-muted">@c.Id</td>
+                        <td class="fw-semibold">@c.Libelle</td>
+                        <td>
+                            @{
+                                var (cls, icon, lbl) = c.Statut switch {
+                                    StatutColis.EnAttente => ("status-badge sb-attente", "hourglass-split", "En attente"),
+                                    StatutColis.EnCours   => ("status-badge sb-cours",   "truck",           "En cours"),
+                                    StatutColis.Livre     => ("status-badge sb-livre",   "check-circle-fill","LivrÃ©"),
+                                    _                     => ("status-badge sb-attente",  "question",        "Inconnu")
+                                };
+                            }
+                            <span class="@cls"><i class="bi bi-@icon me-1"></i>@lbl</span>
+                        </td>
+                        <td>@c.DateLivraison.ToString("dd/MM/yyyy")</td>
+                        <td class="text-success fw-bold">@c.Montant.ToString("N2") DZD</td>
+                        <td>@(c.Livreur is null ? "â€”" : $"{c.Livreur.RaisonSocial} ({c.Livreur.CIN})")</td>
+                        <td>
+                            @{ var tel = PhoneOf(c.LivreurId); }
+                            @if (!string.IsNullOrEmpty(tel))
+                            {
+                                <a href="tel:@tel" class="text-decoration-none fw-semibold"><i class="bi bi-telephone-fill text-success me-1"></i>@tel</a>
+                            }
+                            else { <span class="text-muted small">â€”</span> }
+                        </td>
+                        <td class="text-center">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@c.Id"><i class="bi bi-eye"></i></a>
+                        </td>
                     </tr>
                 }
                 @if (!Model.Any())
                 {
-                    <tr><td colspan="7" class="text-center text-muted py-5">
-                        <i class="bi bi-inbox fs-2 d-block mb-2"></i>Aucun colis ne correspond aux critères de recherche.
+                    <tr><td colspan="8">
+                        <div class="empty-state">
+                            <div class="empty-icon"><i class="bi bi-box-seam"></i></div>
+                            <h6>Aucun colis</h6>
+                            <p>Aucun colis ne correspond Ã  votre recherche.</p>
+                        </div>
                     </td></tr>
-                }
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<div class="page-header">
-    <h2><i class="bi bi-search me-2 text-primary"></i>Recherche de colis</h2>
-</div>
-
-<div class="search-card">
-    <form method="get" class="row g-2 align-items-end">
-        <div class="col-md-2">
-            <label class="form-label small fw-semibold">Prix min (DZD)</label>
-            <input class="form-control" name="PrixMin" value="@s?.PrixMin" placeholder="0" type="number" step="0.01" />
-        </div>
-        <div class="col-md-2">
-            <label class="form-label small fw-semibold">Prix max (DZD)</label>
-            <input class="form-control" name="PrixMax" value="@s?.PrixMax" placeholder="999999" type="number" step="0.01" />
-        </div>
-        <div class="col-md-2">
-            <label class="form-label small fw-semibold">Date livraison</label>
-            <input class="form-control" name="DateLivraison" value="@s?.DateLivraison?.ToString("yyyy-MM-dd")" type="date" />
-        </div>
-        <div class="col-md-2">
-            <label class="form-label small fw-semibold">Libellé</label>
-            <input class="form-control" name="Libelle" value="@s?.Libelle" placeholder="Mot-clé..." />
-        </div>
-        <div class="col-md-2">
-            <label class="form-label small fw-semibold">Ville client</label>
-            <input class="form-control" name="Ville" value="@s?.Ville" placeholder="Ex: Alger" />
-        </div>
-        <div class="col-md-1">
-            <label class="form-label small fw-semibold">CIN livreur</label>
-            <input class="form-control" name="Livreur" value="@s?.Livreur" placeholder="CIN" />
-        </div>
-        <div class="col-md-1 d-flex gap-1">
-            <button class="btn btn-primary w-100"><i class="bi bi-search"></i></button>
-            <a class="btn btn-outline-secondary" asp-action="Colis"><i class="bi bi-x"></i></a>
-        </div>
-    </form>
-</div>
-
-<div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <span><i class="bi bi-box-seam me-2"></i>Résultats</span>
-        <span class="badge bg-primary">@Model.Count() colis trouvé(s)</span>
-    </div>
-    <div class="card-body p-0">
-        <table class="table table-hover mb-0">
-            <thead>
-                <tr><th>Libellé</th><th>Date livraison</th><th>Montant</th><th>Poids</th><th>Client</th><th>Ville</th><th>Livreur</th><th></th></tr>
-            </thead>
-            <tbody>
-                @foreach (var c in Model)
-                {
-                    <tr>
-                        <td class="fw-semibold">@(c.Libelle ?? "—")</td>
-                        <td><i class="bi bi-calendar3 me-1 text-muted"></i>@c.DateLivraison.ToShortDateString()</td>
-                        <td><span class="text-success fw-semibold">@c.Montant.ToString("N2") DZD</span></td>
-                        <td>@c.Poids kg</td>
-                        <td><i class="bi bi-person me-1 text-muted"></i>@c.Client?.Nom @c.Client?.Prenom</td>
-                        <td><i class="bi bi-geo-alt me-1 text-muted"></i>@c.Client?.Ville</td>
-                        <td><i class="bi bi-person-badge me-1 text-muted"></i>@c.Livreur?.CIN</td>
-                        <td><a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@c.Id"><i class="bi bi-eye"></i></a></td>
-                    </tr>
-                }
-                @if (!Model.Any())
-                {
-                    <tr><td colspan="8" class="text-center text-muted py-4"><i class="bi bi-inbox fs-3 d-block mb-2"></i>Aucun colis trouvé</td></tr>
                 }
             </tbody>
         </table>

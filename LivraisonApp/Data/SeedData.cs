@@ -14,7 +14,7 @@ public static class SeedData
         var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         // Roles
-        foreach (var role in new[] { "Admin", "User" })
+        foreach (var role in new[] { "Admin", "Client", "Livreur" })
             if (!await roleManager.RoleExistsAsync(role))
                 await roleManager.CreateAsync(new IdentityRole(role));
 
@@ -23,19 +23,13 @@ public static class SeedData
         var admin = await userManager.FindByEmailAsync(adminEmail);
         if (admin is null)
         {
-            admin = new ApplicationUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true, Role = "Admin" };
+            admin = new ApplicationUser
+            {
+                UserName = adminEmail, Email = adminEmail, EmailConfirmed = true, Role = "Admin",
+                Nom = "Admin", Prenom = "Système", PhoneNumber = "0000000000", Adresse = "Siège"
+            };
             var r = await userManager.CreateAsync(admin, "Admin123!");
             if (r.Succeeded) await userManager.AddToRoleAsync(admin, "Admin");
-        }
-
-        // Demo user account
-        const string userEmail = "user@livraison.local";
-        var demoUser = await userManager.FindByEmailAsync(userEmail);
-        if (demoUser is null)
-        {
-            demoUser = new ApplicationUser { UserName = userEmail, Email = userEmail, EmailConfirmed = true, Role = "User" };
-            var r = await userManager.CreateAsync(demoUser, "User123!");
-            if (r.Succeeded) await userManager.AddToRoleAsync(demoUser, "User");
         }
 
         // Demo data (only if tables are empty)
@@ -63,8 +57,26 @@ public static class SeedData
         context.Clients.AddRange(client1, client2, client3, client4, client5);
         await context.SaveChangesAsync();
 
+        // Comptes Identity liés (démo)
+        async Task CreateLinkedAsync(string email, string pwd, string role, string nom, string prenom, int? clientId, int? livreurId)
+        {
+            if (await userManager.FindByEmailAsync(email) is not null) return;
+            var u = new ApplicationUser
+            {
+                UserName = email, Email = email, EmailConfirmed = true, Role = role,
+                Nom = nom, Prenom = prenom, PhoneNumber = "0550000000",
+                Adresse = "Adresse démo", DateNaissance = new DateTime(1990, 1, 1),
+                ClientId = clientId, LivreurId = livreurId
+            };
+            var rr = await userManager.CreateAsync(u, pwd);
+            if (rr.Succeeded) await userManager.AddToRoleAsync(u, role);
+        }
+
+        await CreateLinkedAsync("client@livraison.local", "Client123!", "Client", client1.Nom, client1.Prenom!, client1.Id, null);
+        await CreateLinkedAsync("livreur@livraison.local", "Livreur123!", "Livreur", "Express", "Livraison", null, livreur1.Id);
+
         var rng = new Random(42);
-        var libelles = new[] { "�lectronique", "V�tements", "Alimentaire", "Livres", "Mobilier", "Cosm�tiques", "M�dicaments", "Jouets" };
+        var libelles = new[] { "Électronique", "Vêtements", "Alimentaire", "Livres", "Mobilier", "Cosmétiques", "Médicaments", "Jouets" };
         var now = DateTime.Now;
         var colis = new List<Colis>();
         var clients = new[] { client1, client2, client3, client4, client5 };
@@ -79,9 +91,9 @@ public static class SeedData
                 colis.Add(new Colis
                 {
                     DateLivraison = date,
-                    Montant = Math.Round(rng.Next(500, 15000) + rng.NextDouble(), 2),
-                    Poids = Math.Round(rng.Next(1, 50) + rng.NextDouble(), 2),
-                    Volume = Math.Round(rng.NextDouble() * 2, 3),
+                    Montant = (float)Math.Round(rng.Next(500, 15000) + rng.NextDouble(), 2),
+                    Poids   = (float)Math.Round(rng.Next(1, 50) + rng.NextDouble(), 2),
+                    Volume  = (float)Math.Round(rng.NextDouble() * 2, 3),
                     Libelle = libelles[rng.Next(libelles.Length)],
                     Statut = (StatutColis)rng.Next(0, 3),
                     ClientId = clients[rng.Next(clients.Length)].Id,

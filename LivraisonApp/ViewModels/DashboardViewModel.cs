@@ -6,7 +6,7 @@ public class DashboardViewModel
     public int    TotalClients   { get; set; }
     public int    TotalLivreurs  { get; set; }
     public int    TotalVehicules { get; set; }
-    public double TotalRevenue   { get; set; }
+    public float TotalRevenue   { get; set; }
     public int    ColisEnAttente { get; set; }
     public int    ColisEnCours   { get; set; }
     public int    ColisLivres    { get; set; }

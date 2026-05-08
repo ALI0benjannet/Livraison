@@ -1,4 +1,4 @@
-@model Colis
+﻿@model Colis
 @{
     ViewData["Title"] = "Nouveau colis";
 }
@@ -12,11 +12,10 @@
         <div class="row g-3">
             <div class="col-md-6">
                 <label asp-for="Statut" class="form-label">Statut</label>
-                <select asp-for="Statut" class="form-select"
-                        asp-items="Html.GetEnumSelectList<StatutColis>()"></select>
+                <select asp-for="Statut" class="form-select" asp-items="Html.GetEnumSelectList<StatutColis>()"></select>
             </div>
             <div class="col-md-6">
-                <label asp-for="Libelle" class="form-label">Libell�</label>
+                <label asp-for="Libelle" class="form-label">Libellé</label>
                 <input asp-for="Libelle" class="form-control" placeholder="Description du colis" />
                 <span asp-validation-for="Libelle" class="text-danger small"></span>
             </div>
@@ -36,18 +35,22 @@
                 <span asp-validation-for="Poids" class="text-danger small"></span>
             </div>
             <div class="col-md-4">
-                <label asp-for="Volume" class="form-label">Volume (m�)</label>
+                <label asp-for="Volume" class="form-label">Volume (m³)</label>
                 <input asp-for="Volume" class="form-control" placeholder="0.0" />
                 <span asp-validation-for="Volume" class="text-danger small"></span>
             </div>
             <div class="col-md-6">
                 <label asp-for="ClientId" class="form-label">Client</label>
-                <select asp-for="ClientId" asp-items="ViewBag.ClientId" class="form-select"><option value="">-- S�lectionner --</option></select>
+                <select asp-for="ClientId" asp-items="ViewBag.ClientId" class="form-select">
+                    <option value="">— Sélectionner —</option>
+                </select>
                 <span asp-validation-for="ClientId" class="text-danger small"></span>
             </div>
             <div class="col-md-6">
                 <label asp-for="LivreurId" class="form-label">Livreur</label>
-                <select asp-for="LivreurId" asp-items="ViewBag.LivreurId" class="form-select"><option value="">-- S�lectionner --</option></select>
+                <select asp-for="LivreurId" asp-items="ViewBag.LivreurId" class="form-select">
+                    <option value="">— Sélectionner —</option>
+                </select>
                 <span asp-validation-for="LivreurId" class="text-danger small"></span>
             </div>
         </div>

@@ -1,4 +1,4 @@
-@model IEnumerable<Colis>
+ï»¿@model IEnumerable<Colis>
 @{
     ViewData["Title"] = "Colis";
 }
@@ -14,21 +14,21 @@
         <table class="table table-hover mb-0" id="dataTable">
             <thead>
                 <tr>
-                    <th>#</th><th>Libellé</th><th>Statut</th><th>Date livraison</th>
-                    <th>Montant</th><th>Client</th><th>Livreur</th><th>Actions</th>
+                    <th>#</th><th>LibellÃ©</th><th>Statut</th><th>Date livraison</th>
+                    <th>Montant</th><th>Client</th><th>Livreur</th><th class="text-center">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td class="text-muted">@item.Id</td>
-                        <td class="fw-semibold">@(item.Libelle ?? "—")</td>
+                        <td class="text-muted fw-bold">@item.Id</td>
+                        <td class="fw-semibold">@(item.Libelle ?? "â€”")</td>
                         <td>
                             @{
                                 var (cls, ico, lbl) = item.Statut switch {
                                     StatutColis.EnCours => ("status-en-cours", "bi-truck", "En cours"),
-                                    StatutColis.Livre   => ("status-livre",    "bi-check-circle-fill", "Livré"),
+                                    StatutColis.Livre   => ("status-livre",    "bi-check-circle-fill", "LivrÃ©"),
                                     _                   => ("status-en-attente", "bi-hourglass-split", "En attente")
                                 };
                             }
@@ -36,56 +36,36 @@
                         </td>
                         <td><i class="bi bi-calendar3 me-1 text-muted"></i>@item.DateLivraison.ToShortDateString()</td>
                         <td class="fw-semibold text-success">@item.Montant.ToString("N2") DZD</td>
-                        <td><i class="bi bi-person me-1 text-muted"></i>@item.Client?.Nom @item.Client?.Prenom</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="avatar avatar-green" style="width:28px;height:28px;font-size:.65rem">
+                                    @(item.Client?.Nom?.Length > 0 ? item.Client.Nom[0].ToString().ToUpper() : "?")
+                                </div>
+                                <span>@item.Client?.Nom @item.Client?.Prenom</span>
+                            </div>
+                        </td>
                         <td><i class="bi bi-person-badge me-1 text-muted"></i>@item.Livreur?.CIN</td>
-                        <td class="action-links">
-                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id" title="Détails"><i class="bi bi-eye"></i></a>
-                            @if (User.IsInRole("Admin"))
-                            {
-                                <a class="btn btn-sm btn-outline-warning" asp-action="Edit" asp-route-id="@item.Id" title="Modifier"><i class="bi bi-pencil"></i></a>
-                                <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id" title="Supprimer"><i class="bi bi-trash"></i></a>
-                            }
+                        <td class="text-center">
+                            <div class="action-links justify-content-center">
+                                <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id" title="DÃ©tails"><i class="bi bi-eye"></i></a>
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <a class="btn btn-sm btn-outline-warning" asp-action="Edit" asp-route-id="@item.Id" title="Modifier"><i class="bi bi-pencil"></i></a>
+                                    <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id" title="Supprimer"><i class="bi bi-trash"></i></a>
+                                }
+                            </div>
                         </td>
                     </tr>
                 }
-            </tbody>
-        </table>
-    </div>
-</div>
-@section Scripts { <script>new DataTable('#dataTable', { language: { url: 'https://cdn.datatables.net/plug-ins/1.13.8/i18n/fr-FR.json' } });</script> }
-<div class="card">
-    <div class="card-body p-0">
-        <table class="table table-hover mb-0" id="dataTable">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Libellé</th>
-                    <th>Date livraison</th>
-                    <th>Montant</th>
-                    <th>Poids (kg)</th>
-                    <th>Client</th>
-                    <th>Livreur</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
+                @if (!Model.Any())
                 {
                     <tr>
-                        <td>@item.Id</td>
-                        <td>@(item.Libelle ?? "—")</td>
-                        <td><i class="bi bi-calendar3 me-1 text-muted"></i>@item.DateLivraison.ToShortDateString()</td>
-                        <td><span class="fw-semibold text-success">@item.Montant.ToString("N2") DZD</span></td>
-                        <td>@item.Poids</td>
-                        <td><i class="bi bi-person me-1 text-muted"></i>@item.Client?.Nom @item.Client?.Prenom</td>
-                        <td><i class="bi bi-person-badge me-1 text-muted"></i>@item.Livreur?.CIN</td>
-                        <td class="action-links">
-                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id"><i class="bi bi-eye"></i></a>
-                            @if (User.IsInRole("Admin"))
-                            {
-                                <a class="btn btn-sm btn-outline-warning" asp-action="Edit" asp-route-id="@item.Id"><i class="bi bi-pencil"></i></a>
-                                <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id"><i class="bi bi-trash"></i></a>
-                            }
+                        <td colspan="8">
+                            <div class="empty-state">
+                                <div class="empty-icon"><i class="bi bi-box-seam"></i></div>
+                                <h6>Aucun colis</h6>
+                                <p>Aucun colis enregistrÃ© pour le moment.</p>
+                            </div>
                         </td>
                     </tr>
                 }
@@ -93,4 +73,13 @@
         </table>
     </div>
 </div>
-@section Scripts { <script>new DataTable('#dataTable', { language: { url: 'https://cdn.datatables.net/plug-ins/1.13.8/i18n/fr-FR.json' } });</script> }
+@section Scripts {
+    <script>
+        if (@Model.Any().ToString().ToLower()) {
+            new DataTable('#dataTable', {
+                language: { url: 'https://cdn.datatables.net/plug-ins/1.13.8/i18n/fr-FR.json' },
+                order: [[0, 'desc']]
+            });
+        }
+    </script>
+}

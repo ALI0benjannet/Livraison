@@ -1,22 +1,16 @@
-@model IEnumerable<UserManagementViewModel>
+ï»¿@model IEnumerable<UserManagementViewModel>
 @{
     ViewData["Title"] = "Gestion des utilisateurs";
 }
 <div class="page-header">
-    <h2><i class="bi bi-people-fill me-2 text-info"></i>Gestion des utilisateurs</h2>
-    <span class="badge bg-primary fs-6">@Model.Count() comptes</span>
+    <h2><i class="bi bi-shield-check me-2 text-danger"></i>Gestion des utilisateurs</h2>
 </div>
-
 <div class="card">
     <div class="card-body p-0">
         <table class="table table-hover mb-0" id="dataTable">
             <thead>
                 <tr>
-                    <th>Email</th>
-                    <th>Rôle</th>
-                    <th>Email confirmé</th>
-                    <th>Statut</th>
-                    <th>Actions</th>
+                    <th>E-mail</th><th>RÃ´le</th><th>Statut</th><th>ConfirmÃ©</th><th class="text-center">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,70 +18,79 @@
                 {
                     <tr>
                         <td>
-                            <i class="bi bi-person-circle me-2 text-muted"></i>
-                            <strong>@u.Email</strong>
-                            @if (u.Email == "admin@livraison.local")
-                            {
-                                <span class="badge bg-danger ms-2">Protégé</span>
-                            }
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="avatar @(u.Role == "Admin" ? "" : "avatar-green")" style="width:30px;height:30px;font-size:.65rem">
+                                    @(u.Email?.Length > 0 ? u.Email[0].ToString().ToUpper() : "?")
+                                </div>
+                                <div>
+                                    <a href="mailto:@u.Email" class="fw-semibold">@u.Email</a>
+                                    @if (u.IsLocked) { <span class="badge bg-danger ms-1" style="font-size:.6rem"><i class="bi bi-lock-fill"></i> VerrouillÃ©</span> }
+                                </div>
+                            </div>
                         </td>
                         <td>
-                            @if (u.Role == "Admin")
+                            <span class="badge @(u.Role == "Admin" ? "bg-danger" : "bg-success")">
+                                <i class="bi bi-@(u.Role == "Admin" ? "shield-fill" : "person-fill") me-1"></i>@u.Role
+                            </span>
+                        </td>
+                        <td>
+                            @if (u.IsLocked)
                             {
-                                <span class="badge bg-danger"><i class="bi bi-shield-fill me-1"></i>Admin</span>
+                                <span class="status-badge sb-attente"><i class="bi bi-lock me-1"></i>ProtÃ©gÃ©</span>
                             }
                             else
                             {
-                                <span class="badge bg-secondary"><i class="bi bi-person me-1"></i>User</span>
+                                <span class="status-badge sb-livre"><i class="bi bi-check-circle me-1"></i>Actif</span>
                             }
                         </td>
                         <td>
                             @if (u.EmailConfirmed)
                             {
-                                <span class="text-success"><i class="bi bi-check-circle-fill"></i> Confirmé</span>
+                                <span class="status-badge sb-livre"><i class="bi bi-envelope-check me-1"></i>ConfirmÃ©</span>
                             }
                             else
                             {
-                                <span class="text-muted"><i class="bi bi-x-circle"></i> Non confirmé</span>
+                                <span class="status-badge sb-attente"><i class="bi bi-envelope-x me-1"></i>En attente</span>
                             }
                         </td>
-                        <td>
-                            @if (u.IsLocked)
-                            {
-                                <span class="status-badge status-en-attente"><i class="bi bi-lock-fill me-1"></i>Verrouillé</span>
-                            }
-                            else
-                            {
-                                <span class="status-badge status-livre"><i class="bi bi-unlock-fill me-1"></i>Actif</span>
-                            }
-                        </td>
-                        <td>
-                            @if (u.Email != "admin@livraison.local")
-                            {
-                                <form asp-action="ToggleLock" asp-route-id="@u.Id" method="post" class="d-inline">
-                                    <button class="btn btn-sm @(u.IsLocked ? "btn-outline-success" : "btn-outline-warning")" 
-                                            title="@(u.IsLocked ? "Déverrouiller" : "Verrouiller")">
-                                        <i class="bi bi-@(u.IsLocked ? "unlock" : "lock")"></i>
-                                    </button>
-                                </form>
-                                <form asp-action="Delete" asp-route-id="@u.Id" method="post" class="d-inline"
-                                      onsubmit="return confirm('Supprimer le compte @u.Email ?')">
-                                    <button class="btn btn-sm btn-outline-danger" title="Supprimer">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-                            }
-                            else
-                            {
-                                <span class="text-muted small">—</span>
-                            }
+                        <td class="text-center">
+                            <div class="action-links justify-content-center">
+                                @if (!u.IsLocked)
+                                {
+                                    <form asp-action="LockUser" method="post" style="display:inline">
+                                        <input type="hidden" name="userId" value="@u.Id" />
+                                        <button class="btn btn-sm btn-outline-danger" title="Verrouiller"><i class="bi bi-lock"></i></button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-action="UnlockUser" method="post" style="display:inline">
+                                        <input type="hidden" name="userId" value="@u.Id" />
+                                        <button class="btn btn-sm btn-outline-success" title="DÃ©verrouiller"><i class="bi bi-unlock"></i></button>
+                                    </form>
+                                }
+                                @if (u.Role != "Admin")
+                                {
+                                    <form asp-action="PromoteToAdmin" method="post" style="display:inline">
+                                        <input type="hidden" name="userId" value="@u.Id" />
+                                        <button class="btn btn-sm btn-outline-warning" title="Promouvoir Admin"><i class="bi bi-star"></i></button>
+                                    </form>
+                                }
+                            </div>
                         </td>
                     </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="5">
+                        <div class="empty-state">
+                            <div class="empty-icon"><i class="bi bi-people"></i></div>
+                            <h6>Aucun utilisateur</h6>
+                        </div>
+                    </td></tr>
                 }
             </tbody>
         </table>
     </div>
 </div>
-@section Scripts {
-    <script>new DataTable('#dataTable', { language: { url: 'https://cdn.datatables.net/plug-ins/1.13.8/i18n/fr-FR.json' } });</script>
-}
+@section Scripts { <script>new DataTable('#dataTable', { language: { url: 'https://cdn.datatables.net/plug-ins/1.13.8/i18n/fr-FR.json' } });</script> }

@@ -1,9 +1,9 @@
-@model Colis
+ï»¿@model Colis
 @{
     ViewData["Title"] = "Modifier colis";
 }
 <div class="page-header">
-    <h2><i class="bi bi-pencil-square me-2 text-warning"></i>Modifier colis #@Model?.Id</h2>
+    <h2><i class="bi bi-pencil-square me-2 text-warning"></i>Modifier colis <span class="text-muted fw-normal">#@Model?.Id</span></h2>
     <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left me-1"></i>Retour</a>
 </div>
 <div class="form-card">
@@ -13,11 +13,10 @@
         <div class="row g-3">
             <div class="col-md-6">
                 <label asp-for="Statut" class="form-label">Statut</label>
-                <select asp-for="Statut" class="form-select"
-                        asp-items="Html.GetEnumSelectList<StatutColis>()"></select>
+                <select asp-for="Statut" class="form-select" asp-items="Html.GetEnumSelectList<StatutColis>()"></select>
             </div>
             <div class="col-md-6">
-                <label asp-for="Libelle" class="form-label">Libellé</label>
+                <label asp-for="Libelle" class="form-label">LibellÃ©</label>
                 <input asp-for="Libelle" class="form-control" />
                 <span asp-validation-for="Libelle" class="text-danger small"></span>
             </div>
@@ -36,7 +35,7 @@
                 <input asp-for="Poids" class="form-control" />
             </div>
             <div class="col-md-4">
-                <label asp-for="Volume" class="form-label">Volume (m³)</label>
+                <label asp-for="Volume" class="form-label">Volume (mÂ³)</label>
                 <input asp-for="Volume" class="form-control" />
             </div>
             <div class="col-md-6">
@@ -49,7 +48,7 @@
             </div>
         </div>
         <div class="mt-4 d-flex gap-2">
-            <button class="btn btn-warning text-white"><i class="bi bi-check-lg me-1"></i>Mettre à jour</button>
+            <button class="btn btn-warning text-white"><i class="bi bi-check-lg me-1"></i>Mettre Ã  jour</button>
             <a class="btn btn-outline-secondary" asp-action="Index">Annuler</a>
         </div>
     </form>
