@@ -63,26 +63,64 @@
 </div>
 
 <!-- Recherche -->
-<div class="form-card mb-3">
-    <form method="get" class="row g-2 align-items-end">
-        <div class="col-md-6">
-            <label class="form-label small text-muted">Recherche (libellé, client)</label>
-            <input type="text" name="search" value="@search" class="form-control" placeholder="Rechercher..." />
+<div class="filter-card">
+    <div class="filter-card-header" data-toggle="filter">
+        <h6>
+            <i class="bi bi-funnel-fill text-warning"></i>
+            Recherche &amp; filtres
+            @{ var nbActive = (string.IsNullOrWhiteSpace(search) ? 0 : 1) + (statut.HasValue ? 1 : 0); }
+            @if (nbActive > 0)
+            {
+                <span class="badge bg-warning text-dark ms-1">@nbActive</span>
+            }
+        </h6>
+        <i class="bi bi-chevron-down chev"></i>
+    </div>
+    <div class="filter-card-body">
+        <form method="get" data-auto-submit class="row g-3 align-items-end">
+            <div class="col-md-7">
+                <label class="form-label">Recherche</label>
+                <div class="position-relative">
+                    <i class="bi bi-search position-absolute text-muted" style="left:14px;top:12px"></i>
+                    <input type="search" name="search" value="@search" class="form-control ps-5" placeholder="Libellé, nom ou prénom du client…" autocomplete="off" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Statut</label>
+                <select name="statut" class="form-select">
+                    <option value="">Tous les statuts</option>
+                    <option value="EnAttente" selected="@(statut == StatutColis.EnAttente)">⏳ En attente</option>
+                    <option value="EnCours" selected="@(statut == StatutColis.EnCours)">🚚 En cours</option>
+                    <option value="Livre" selected="@(statut == StatutColis.Livre)">✅ Livré</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label invisible">.</label>
+                <a asp-action="Index" class="btn btn-outline-secondary w-100"><i class="bi bi-arrow-counterclockwise me-1"></i>Réinit.</a>
+            </div>
+        </form>
+    </div>
+    @if (nbActive > 0)
+    {
+        <div class="filter-chips">
+            <span class="text-muted small me-1"><i class="bi bi-funnel me-1"></i>Filtres actifs :</span>
+            @if (!string.IsNullOrWhiteSpace(search))
+            {
+                <a class="filter-chip" href="@Url.Action("Index", new { statut })">
+                    <span class="chip-label">Recherche :</span> @search <i class="bi bi-x-circle-fill"></i>
+                </a>
+            }
+            @if (statut.HasValue)
+            {
+                <a class="filter-chip" href="@Url.Action("Index", new { search })">
+                    <span class="chip-label">Statut :</span> @statut.Value <i class="bi bi-x-circle-fill"></i>
+                </a>
+            }
+            <a class="filter-chip filter-chip-clear-all" href="@Url.Action("Index")">
+                <i class="bi bi-trash3"></i> Tout effacer
+            </a>
         </div>
-        <div class="col-md-3">
-            <label class="form-label small text-muted">Statut</label>
-            <select name="statut" class="form-select">
-                <option value="">— Tous —</option>
-                <option value="EnAttente" selected="@(statut == StatutColis.EnAttente)">En attente</option>
-                <option value="EnCours" selected="@(statut == StatutColis.EnCours)">En cours</option>
-                <option value="Livre" selected="@(statut == StatutColis.Livre)">Livré</option>
-            </select>
-        </div>
-        <div class="col-md-3 d-flex gap-2">
-            <button class="btn btn-primary flex-fill"><i class="bi bi-search me-1"></i>Filtrer</button>
-            <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i></a>
-        </div>
-    </form>
+    }
 </div>
 
 <div class="card">

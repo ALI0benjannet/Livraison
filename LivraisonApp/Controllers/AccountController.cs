@@ -106,7 +106,25 @@ public class AccountController : Controller
     }
 
     [AllowAnonymous]
-    public IActionResult Login() => View();
+    public IActionResult Login()
+    {
+        // Si déjà connecté, ne JAMAIS afficher la page de login : rediriger vers la home selon le rôle.
+        if (User?.Identity?.IsAuthenticated == true)
+        {
+            if (User.IsInRole("Admin"))   return RedirectToAction("Index", "Dashboard");
+            if (User.IsInRole("Livreur")) return RedirectToAction("Index", "MesLivraisons");
+            if (User.IsInRole("Client"))  return RedirectToAction("Colis", "User");
+            return Redirect("/");
+        }
+        return View();
+    }
+
+    [AllowAnonymous]
+    public IActionResult AccessDenied(string? returnUrl = null)
+    {
+        ViewBag.ReturnUrl = returnUrl;
+        return View();
+    }
 
     [HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel vm)

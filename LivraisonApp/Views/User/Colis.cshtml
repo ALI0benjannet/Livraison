@@ -10,6 +10,27 @@
             return (string?)o.GetType().GetProperty("PhoneNumber")?.GetValue(o);
         return null;
     }
+
+    // Construit la liste des filtres actifs (pour les chips)
+    var activeChips = new List<(string label, string value, string removeQuery)>();
+    string Q(params (string key, string? val)[] keep) {
+        var parts = keep.Where(p => !string.IsNullOrEmpty(p.val))
+            .Select(p => $"{p.key}={Uri.EscapeDataString(p.val!)}");
+        var s2 = string.Join("&", parts);
+        return s2.Length == 0 ? "" : "?" + s2;
+    }
+    if (!string.IsNullOrWhiteSpace(s.Libelle))
+        activeChips.Add(("Libellé", s.Libelle, Q(("Livreur", s.Livreur), ("PrixMin", s.PrixMin?.ToString()), ("PrixMax", s.PrixMax?.ToString()), ("Statut", s.Statut?.ToString()), ("DateLivraison", s.DateLivraison?.ToString("yyyy-MM-dd")))));
+    if (!string.IsNullOrWhiteSpace(s.Livreur))
+        activeChips.Add(("Livreur", s.Livreur, Q(("Libelle", s.Libelle), ("PrixMin", s.PrixMin?.ToString()), ("PrixMax", s.PrixMax?.ToString()), ("Statut", s.Statut?.ToString()), ("DateLivraison", s.DateLivraison?.ToString("yyyy-MM-dd")))));
+    if (s.PrixMin.HasValue)
+        activeChips.Add(("Prix min", s.PrixMin.Value.ToString("N2") + " DZD", Q(("Libelle", s.Libelle), ("Livreur", s.Livreur), ("PrixMax", s.PrixMax?.ToString()), ("Statut", s.Statut?.ToString()), ("DateLivraison", s.DateLivraison?.ToString("yyyy-MM-dd")))));
+    if (s.PrixMax.HasValue)
+        activeChips.Add(("Prix max", s.PrixMax.Value.ToString("N2") + " DZD", Q(("Libelle", s.Libelle), ("Livreur", s.Livreur), ("PrixMin", s.PrixMin?.ToString()), ("Statut", s.Statut?.ToString()), ("DateLivraison", s.DateLivraison?.ToString("yyyy-MM-dd")))));
+    if (s.Statut.HasValue)
+        activeChips.Add(("Statut", s.Statut.Value.ToString(), Q(("Libelle", s.Libelle), ("Livreur", s.Livreur), ("PrixMin", s.PrixMin?.ToString()), ("PrixMax", s.PrixMax?.ToString()), ("DateLivraison", s.DateLivraison?.ToString("yyyy-MM-dd")))));
+    if (s.DateLivraison.HasValue)
+        activeChips.Add(("Date", s.DateLivraison.Value.ToString("dd/MM/yyyy"), Q(("Libelle", s.Libelle), ("Livreur", s.Livreur), ("PrixMin", s.PrixMin?.ToString()), ("PrixMax", s.PrixMax?.ToString()), ("Statut", s.Statut?.ToString()))));
 }
 
 <div class="page-header">
@@ -21,42 +42,80 @@
     <div class="alert alert-warning"><i class="bi bi-exclamation-triangle me-1"></i>@TempData["Error"]</div>
 }
 
-<div class="form-card mb-3">
-    <form method="get" asp-action="Colis" class="row g-2 align-items-end">
-        <div class="col-md-3">
-            <label class="form-label small text-muted">Libellé</label>
-            <input type="text" name="Libelle" value="@s.Libelle" class="form-control" placeholder="Rechercher un libellé..." />
+<div class="filter-card">
+    <div class="filter-card-header" data-toggle="filter">
+        <h6>
+            <i class="bi bi-funnel-fill text-primary"></i>
+            Recherche avancée
+            @if (activeChips.Any())
+            {
+                <span class="badge bg-primary ms-1">@activeChips.Count</span>
+            }
+        </h6>
+        <i class="bi bi-chevron-down chev"></i>
+    </div>
+    <div class="filter-card-body">
+        <form method="get" asp-action="Colis" data-auto-submit class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label">Libellé</label>
+                <div class="position-relative">
+                    <i class="bi bi-tag position-absolute text-muted" style="left:12px;top:11px"></i>
+                    <input type="text" name="Libelle" value="@s.Libelle" class="form-control ps-5" placeholder="Rechercher un libellé…" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Livreur (nom / CIN)</label>
+                <div class="position-relative">
+                    <i class="bi bi-person-badge position-absolute text-muted" style="left:12px;top:11px"></i>
+                    <input type="text" name="Livreur" value="@s.Livreur" class="form-control ps-5" placeholder="Express, 12345…" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Statut</label>
+                <select name="Statut" class="form-select">
+                    <option value="">Tous les statuts</option>
+                    <option value="EnAttente" selected="@(s.Statut == StatutColis.EnAttente)">⏳ En attente</option>
+                    <option value="EnCours" selected="@(s.Statut == StatutColis.EnCours)">🚚 En cours</option>
+                    <option value="Livre" selected="@(s.Statut == StatutColis.Livre)">✅ Livré</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Prix min (DZD)</label>
+                <input type="number" step="0.01" min="0" name="PrixMin" value="@s.PrixMin" class="form-control" placeholder="0,00" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Prix max (DZD)</label>
+                <input type="number" step="0.01" min="0" name="PrixMax" value="@s.PrixMax" class="form-control" placeholder="∞" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Date de livraison</label>
+                <input type="date" name="DateLivraison" value="@(s.DateLivraison?.ToString("yyyy-MM-dd"))" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label invisible">.</label>
+                <div class="filter-actions" style="margin-top:0">
+                    <a asp-action="Colis" class="btn btn-outline-secondary"><i class="bi bi-arrow-counterclockwise me-1"></i>Effacer</a>
+                    <button class="btn btn-primary"><i class="bi bi-search me-1"></i>Filtrer</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    @if (activeChips.Any())
+    {
+        <div class="filter-chips">
+            <span class="text-muted small me-1"><i class="bi bi-funnel me-1"></i>Filtres actifs :</span>
+            @foreach (var chip in activeChips)
+            {
+                <a class="filter-chip" href="@Url.Action("Colis")@chip.removeQuery" title="Retirer ce filtre">
+                    <span class="chip-label">@chip.label :</span> @chip.value
+                    <i class="bi bi-x-circle-fill"></i>
+                </a>
+            }
+            <a class="filter-chip filter-chip-clear-all" href="@Url.Action("Colis")">
+                <i class="bi bi-trash3"></i> Tout effacer
+            </a>
         </div>
-        <div class="col-md-3">
-            <label class="form-label small text-muted">Livreur (nom / CIN)</label>
-            <input type="text" name="Livreur" value="@s.Livreur" class="form-control" placeholder="Express, 12345..." />
-        </div>
-        <div class="col-md-2">
-            <label class="form-label small text-muted">Prix min (DZD)</label>
-            <input type="number" step="0.01" name="PrixMin" value="@s.PrixMin" class="form-control" />
-        </div>
-        <div class="col-md-2">
-            <label class="form-label small text-muted">Prix max (DZD)</label>
-            <input type="number" step="0.01" name="PrixMax" value="@s.PrixMax" class="form-control" />
-        </div>
-        <div class="col-md-2">
-            <label class="form-label small text-muted">Statut</label>
-            <select name="Statut" class="form-select">
-                <option value="">— Tous —</option>
-                <option value="EnAttente" selected="@(s.Statut == StatutColis.EnAttente)">En attente</option>
-                <option value="EnCours" selected="@(s.Statut == StatutColis.EnCours)">En cours</option>
-                <option value="Livre" selected="@(s.Statut == StatutColis.Livre)">Livré</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <label class="form-label small text-muted">Date de livraison</label>
-            <input type="date" name="DateLivraison" value="@(s.DateLivraison?.ToString("yyyy-MM-dd"))" class="form-control" />
-        </div>
-        <div class="col-md-9 d-flex gap-2 justify-content-end">
-            <button class="btn btn-primary"><i class="bi bi-search me-1"></i>Rechercher</button>
-            <a asp-action="Colis" class="btn btn-outline-secondary"><i class="bi bi-x-lg me-1"></i>Réinitialiser</a>
-        </div>
-    </form>
+    }
 </div>
 
 <div class="card">
