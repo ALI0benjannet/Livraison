@@ -9,6 +9,8 @@ public class Livreur
     [Required]
     public string CIN { get; set; } = string.Empty;
 
+    public string? Nom { get; set; }
+    public string? Prenom { get; set; }
     public string? CodePostal { get; set; }
     public string? RaisonSocial { get; set; }
     public string? Ville { get; set; }

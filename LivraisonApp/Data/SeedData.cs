@@ -35,25 +35,25 @@ public static class SeedData
         // Demo data (only if tables are empty)
         if (await context.Vehicules.AnyAsync()) return;
 
-        var camion1 = new Camion { Couleur = "Blanc", Marque = "Mercedes", Matricule = "123-ALG-16", VitesseLimite = 90, Capacite = 10, NbrEssieux = 3 };
-        var camion2 = new Camion { Couleur = "Gris", Marque = "Volvo", Matricule = "456-ORA-31", VitesseLimite = 85, Capacite = 20, NbrEssieux = 4 };
-        var voiture1 = new Voiture { Couleur = "Rouge", Marque = "Renault", Matricule = "789-ANN-06", VitesseLimite = 130, NbrPlaces = 5 };
-        var voiture2 = new Voiture { Couleur = "Bleu", Marque = "Peugeot", Matricule = "321-CON-25", VitesseLimite = 120, NbrPlaces = 5 };
+        var camion1 = new Camion { Couleur = "Blanc", Marque = "Mercedes", Matricule = "123-TUN-16", VitesseLimite = 90, Capacite = 10, NbrEssieux = 3 };
+        var camion2 = new Camion { Couleur = "Gris", Marque = "Volvo", Matricule = "456-TUN-31", VitesseLimite = 85, Capacite = 20, NbrEssieux = 4 };
+        var voiture1 = new Voiture { Couleur = "Rouge", Marque = "Renault", Matricule = "789-TUN-06", VitesseLimite = 130, NbrPlaces = 5 };
+        var voiture2 = new Voiture { Couleur = "Bleu", Marque = "Peugeot", Matricule = "321-TUN-25", VitesseLimite = 120, NbrPlaces = 5 };
         context.Camions.AddRange(camion1, camion2);
         context.Voitures.AddRange(voiture1, voiture2);
         await context.SaveChangesAsync();
 
-        var livreur1 = new Livreur { CIN = "10000001", RaisonSocial = "Express Livraison", Ville = "Alger", CodePostal = "16000", VehiculeId = camion1.Id };
-        var livreur2 = new Livreur { CIN = "10000002", RaisonSocial = "Rapide Colis", Ville = "Oran", CodePostal = "31000", VehiculeId = voiture1.Id };
-        var livreur3 = new Livreur { CIN = "10000003", RaisonSocial = "Trans Maghreb", Ville = "Constantine", CodePostal = "25000", VehiculeId = camion2.Id };
+        var livreur1 = new Livreur { CIN = "10000001", Nom = "Ben Salah", Prenom = "Ahmed", RaisonSocial = "Express Livraison", Ville = "Tunis", CodePostal = "1000", VehiculeId = camion1.Id };
+        var livreur2 = new Livreur { CIN = "10000002", Nom = "Trabelsi", Prenom = "Mohamed", RaisonSocial = "Rapide Colis", Ville = "Sfax", CodePostal = "3000", VehiculeId = voiture1.Id };
+        var livreur3 = new Livreur { CIN = "10000003", Nom = "Gharbi", Prenom = "Slim", RaisonSocial = "Trans Maghreb", Ville = "Bizerte", CodePostal = "7000", VehiculeId = camion2.Id };
         context.Livreurs.AddRange(livreur1, livreur2, livreur3);
         await context.SaveChangesAsync();
 
-        var client1 = new Client { Nom = "Benali", Prenom = "Mohamed", Ville = "Alger", CodePostal = "16000" };
-        var client2 = new Client { Nom = "Zerrouk", Prenom = "Fatima", Ville = "Oran", CodePostal = "31000" };
-        var client3 = new Client { Nom = "Hamdi", Prenom = "Karim", Ville = "Annaba", CodePostal = "23000" };
-        var client4 = new Client { Nom = "Boukhalfa", Prenom = "Sara", Ville = "Constantine", CodePostal = "25000" };
-        var client5 = new Client { Nom = "Messaoud", Prenom = "Yacine", Ville = "Blida", CodePostal = "09000" };
+        var client1 = new Client { Nom = "Ben Ali",  Prenom = "Mohamed", Ville = "Tunis",   CodePostal = "1000" };
+        var client2 = new Client { Nom = "Zaouali",  Prenom = "Fatma",   Ville = "Sfax",    CodePostal = "3000" };
+        var client3 = new Client { Nom = "Hamdi",    Prenom = "Karim",   Ville = "Sousse",  CodePostal = "4000" };
+        var client4 = new Client { Nom = "Bouazizi", Prenom = "Sara",    Ville = "Bizerte", CodePostal = "7000" };
+        var client5 = new Client { Nom = "Mejri",    Prenom = "Yassine", Ville = "Gabès",   CodePostal = "6000" };
         context.Clients.AddRange(client1, client2, client3, client4, client5);
         await context.SaveChangesAsync();
 

@@ -27,9 +27,24 @@ public class ColisController : Controller
     [Authorize(Roles = "Admin")]
     public IActionResult Create()
     {
-        ViewBag.ClientId = new SelectList(_context.Clients, "Id", "Nom");
-        ViewBag.LivreurId = new SelectList(_context.Livreurs, "Id", "CIN");
+        PopulateDropdowns();
         return View();
+    }
+
+    private void PopulateDropdowns(int? clientId = null, int? livreurId = null)
+    {
+        var clients = _context.Clients
+            .OrderBy(c => c.Nom)
+            .Select(c => new { c.Id, Display = ((c.Nom ?? "") + " " + (c.Prenom ?? "")).Trim() })
+            .ToList();
+        var livreurs = _context.Livreurs
+            .OrderBy(l => l.Nom)
+            .Select(l => new { l.Id, Display = string.IsNullOrWhiteSpace((l.Nom ?? "") + (l.Prenom ?? ""))
+                ? (l.RaisonSocial ?? l.CIN)
+                : ((l.Nom ?? "") + " " + (l.Prenom ?? "")).Trim() })
+            .ToList();
+        ViewBag.ClientId = new SelectList(clients, "Id", "Display", clientId);
+        ViewBag.LivreurId = new SelectList(livreurs, "Id", "Display", livreurId);
     }
 
     [HttpPost, Authorize(Roles = "Admin"), ValidateAntiForgeryToken]
@@ -37,8 +52,7 @@ public class ColisController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.ClientId = new SelectList(_context.Clients, "Id", "Nom");
-            ViewBag.LivreurId = new SelectList(_context.Livreurs, "Id", "CIN");
+            PopulateDropdowns(colis.ClientId, colis.LivreurId);
             return View(colis);
         }
         if (imageFile != null && imageFile.Length > 0)
@@ -47,8 +61,7 @@ public class ColisController : Controller
             if (imageUrl == null)
             {
                 ModelState.AddModelError("imageFile", "Format invalide ou fichier trop volumineux (max 5 Mo, jpg/png/gif/webp).");
-                ViewBag.ClientId = new SelectList(_context.Clients, "Id", "Nom");
-                ViewBag.LivreurId = new SelectList(_context.Livreurs, "Id", "CIN");
+                PopulateDropdowns(colis.ClientId, colis.LivreurId);
                 return View(colis);
             }
             colis.ImageUrl = imageUrl;
@@ -63,8 +76,7 @@ public class ColisController : Controller
     public async Task<IActionResult> Edit(int id)
     {
         var entity = await _uow.Colis.GetByIdAsync(id);
-        ViewBag.ClientId = new SelectList(_context.Clients, "Id", "Nom", entity?.ClientId);
-        ViewBag.LivreurId = new SelectList(_context.Livreurs, "Id", "CIN", entity?.LivreurId);
+        PopulateDropdowns(entity?.ClientId, entity?.LivreurId);
         return View(entity);
     }
 
@@ -73,8 +85,7 @@ public class ColisController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.ClientId = new SelectList(_context.Clients, "Id", "Nom", colis.ClientId);
-            ViewBag.LivreurId = new SelectList(_context.Livreurs, "Id", "CIN", colis.LivreurId);
+            PopulateDropdowns(colis.ClientId, colis.LivreurId);
             return View(colis);
         }
         if (imageFile != null && imageFile.Length > 0)
@@ -83,8 +94,7 @@ public class ColisController : Controller
             if (newUrl == null)
             {
                 ModelState.AddModelError("imageFile", "Format invalide ou fichier trop volumineux (max 5 Mo, jpg/png/gif/webp).");
-                ViewBag.ClientId = new SelectList(_context.Clients, "Id", "Nom", colis.ClientId);
-                ViewBag.LivreurId = new SelectList(_context.Livreurs, "Id", "CIN", colis.LivreurId);
+                PopulateDropdowns(colis.ClientId, colis.LivreurId);
                 return View(colis);
             }
             DeleteImage(colis.ImageUrl);

@@ -58,7 +58,7 @@
                             <span class="status-badge @cls"><i class="bi @ico me-1"></i>@lbl</span>
                         </td>
                         <td><i class="bi bi-calendar3 me-1 text-muted"></i>@item.DateLivraison.ToShortDateString()</td>
-                        <td class="fw-semibold text-success">@item.Montant.ToString("N2") DZD</td>
+                        <td class="fw-semibold text-success">@item.Montant.ToString("N2") DT</td>
                         <td>
                             <div class="d-flex align-items-center gap-2">
                                 <div class="avatar avatar-green" style="width:28px;height:28px;font-size:.65rem">
@@ -67,7 +67,7 @@
                                 <span>@item.Client?.Nom @item.Client?.Prenom</span>
                             </div>
                         </td>
-                        <td><i class="bi bi-person-badge me-1 text-muted"></i>@item.Livreur?.CIN</td>
+                        <td><i class="bi bi-person-badge me-1 text-muted"></i>@(((item.Livreur?.Nom ?? "") + " " + (item.Livreur?.Prenom ?? "")).Trim() is { Length: > 0 } ln ? ln : (item.Livreur?.RaisonSocial ?? item.Livreur?.CIN))</td>
                         <td class="text-center">
                             <div class="action-links justify-content-center">
                                 <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id" title="Détails"><i class="bi bi-eye"></i></a>

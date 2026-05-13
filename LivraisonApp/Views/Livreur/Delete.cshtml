@@ -9,10 +9,11 @@
 <div class="form-card" style="max-width:480px">
     <div class="alert alert-danger">
         <i class="bi bi-exclamation-triangle-fill me-2"></i>
-        Êtes-vous sûr de vouloir supprimer le livreur <strong>@Model?.CIN</strong> ?
+        Êtes-vous sûr de vouloir supprimer le livreur <strong>@(((Model?.Nom ?? "") + " " + (Model?.Prenom ?? "")).Trim() is { Length: > 0 } np ? np : Model?.CIN)</strong> ?
         <br><small class="mt-1 d-block opacity-75">Cette action est irréversible.</small>
     </div>
     <dl class="row small mt-3">
+        <dt class="col-5 text-muted">CIN</dt><dd class="col-7 font-monospace">@Model?.CIN</dd>
         <dt class="col-5 text-muted">Raison sociale</dt><dd class="col-7">@(Model?.RaisonSocial ?? "—")</dd>
         <dt class="col-5 text-muted">Ville</dt><dd class="col-7">@(Model?.Ville ?? "—")</dd>
         <dt class="col-5 text-muted">Colis en charge</dt><dd class="col-7"><span class="badge bg-primary">@(Model?.Colis?.Count ?? 0)</span></dd>

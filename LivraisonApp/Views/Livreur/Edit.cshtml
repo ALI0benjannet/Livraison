@@ -12,6 +12,15 @@
         <input type="hidden" asp-for="Id" />
         <div class="row g-3">
             <div class="col-md-6">
+                <label asp-for="Nom" class="form-label">Nom <span class="text-danger">*</span></label>
+                <input asp-for="Nom" class="form-control" />
+                <span asp-validation-for="Nom" class="text-danger small"></span>
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Prenom" class="form-label">Prénom</label>
+                <input asp-for="Prenom" class="form-control" />
+            </div>
+            <div class="col-md-6">
                 <label asp-for="CIN" class="form-label">CIN <span class="text-danger">*</span></label>
                 <input asp-for="CIN" class="form-control font-monospace" />
                 <span asp-validation-for="CIN" class="text-danger small"></span>

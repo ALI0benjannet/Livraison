@@ -67,10 +67,33 @@ using (var scope = app.Services.CreateScope())
         db.Database.ExecuteSqlRaw(
             "IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'Colis') AND name = N'ImageUrl') " +
             "ALTER TABLE [Colis] ADD [ImageUrl] NVARCHAR(300) NULL");
+        db.Database.ExecuteSqlRaw(
+            "IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'Livreurs') AND name = N'Nom') " +
+            "ALTER TABLE [Livreurs] ADD [Nom] NVARCHAR(MAX) NULL");
+        db.Database.ExecuteSqlRaw(
+            "IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'Livreurs') AND name = N'Prenom') " +
+            "ALTER TABLE [Livreurs] ADD [Prenom] NVARCHAR(MAX) NULL");
+        // Renomme villes algériennes -> tunisiennes (idempotent)
+        db.Database.ExecuteSqlRaw(@"
+            UPDATE [Clients]  SET [Ville]='Tunis',       [CodePostal]='1000' WHERE [Ville]='Alger';
+            UPDATE [Clients]  SET [Ville]='Sfax',        [CodePostal]='3000' WHERE [Ville]='Oran';
+            UPDATE [Clients]  SET [Ville]='Sousse',      [CodePostal]='4000' WHERE [Ville]='Annaba';
+            UPDATE [Clients]  SET [Ville]='Bizerte',     [CodePostal]='7000' WHERE [Ville]='Constantine';
+            UPDATE [Clients]  SET [Ville]='Gabès',       [CodePostal]='6000' WHERE [Ville]='Blida';
+            UPDATE [Livreurs] SET [Ville]='Tunis',       [CodePostal]='1000' WHERE [Ville]='Alger';
+            UPDATE [Livreurs] SET [Ville]='Sfax',        [CodePostal]='3000' WHERE [Ville]='Oran';
+            UPDATE [Livreurs] SET [Ville]='Sousse',      [CodePostal]='4000' WHERE [Ville]='Annaba';
+            UPDATE [Livreurs] SET [Ville]='Bizerte',     [CodePostal]='7000' WHERE [Ville]='Constantine';
+            UPDATE [Livreurs] SET [Ville]='Gabès',       [CodePostal]='6000' WHERE [Ville]='Blida';
+            UPDATE [Vehicules] SET [Matricule]=REPLACE(REPLACE(REPLACE(REPLACE([Matricule],'-ALG-','-TUN-'),'-ORA-','-TUN-'),'-ANN-','-TUN-'),'-CON-','-TUN-')
+                WHERE [Matricule] LIKE '%-ALG-%' OR [Matricule] LIKE '%-ORA-%' OR [Matricule] LIKE '%-ANN-%' OR [Matricule] LIKE '%-CON-%';
+        ");
     }
     else
     {
         try { db.Database.ExecuteSqlRaw("ALTER TABLE \"Colis\" ADD COLUMN \"ImageUrl\" TEXT"); } catch { }
+        try { db.Database.ExecuteSqlRaw("ALTER TABLE \"Livreurs\" ADD COLUMN \"Nom\" TEXT"); } catch { }
+        try { db.Database.ExecuteSqlRaw("ALTER TABLE \"Livreurs\" ADD COLUMN \"Prenom\" TEXT"); } catch { }
     }
 }
 await SeedData.InitializeAsync(app.Services);

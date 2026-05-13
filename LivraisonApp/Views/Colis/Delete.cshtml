@@ -18,7 +18,7 @@
         <dt class="col-5 text-muted">Date livraison</dt>
         <dd class="col-7">@Model?.DateLivraison.ToShortDateString()</dd>
         <dt class="col-5 text-muted">Montant</dt>
-        <dd class="col-7 text-success fw-bold">@Model?.Montant.ToString("N2") DZD</dd>
+        <dd class="col-7 text-success fw-bold">@Model?.Montant.ToString("N2") DT</dd>
     </dl>
     <form asp-action="Delete" method="post" class="d-flex gap-2 mt-3">
         <input type="hidden" asp-for="Id" />

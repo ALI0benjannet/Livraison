@@ -24,9 +24,9 @@
     if (!string.IsNullOrWhiteSpace(s.Livreur))
         activeChips.Add(("Livreur", s.Livreur, Q(("Libelle", s.Libelle), ("PrixMin", s.PrixMin?.ToString()), ("PrixMax", s.PrixMax?.ToString()), ("Statut", s.Statut?.ToString()), ("DateLivraison", s.DateLivraison?.ToString("yyyy-MM-dd")))));
     if (s.PrixMin.HasValue)
-        activeChips.Add(("Prix min", s.PrixMin.Value.ToString("N2") + " DZD", Q(("Libelle", s.Libelle), ("Livreur", s.Livreur), ("PrixMax", s.PrixMax?.ToString()), ("Statut", s.Statut?.ToString()), ("DateLivraison", s.DateLivraison?.ToString("yyyy-MM-dd")))));
+        activeChips.Add(("Prix min", s.PrixMin.Value.ToString("N2") + " DT", Q(("Libelle", s.Libelle), ("Livreur", s.Livreur), ("PrixMax", s.PrixMax?.ToString()), ("Statut", s.Statut?.ToString()), ("DateLivraison", s.DateLivraison?.ToString("yyyy-MM-dd")))));
     if (s.PrixMax.HasValue)
-        activeChips.Add(("Prix max", s.PrixMax.Value.ToString("N2") + " DZD", Q(("Libelle", s.Libelle), ("Livreur", s.Livreur), ("PrixMin", s.PrixMin?.ToString()), ("Statut", s.Statut?.ToString()), ("DateLivraison", s.DateLivraison?.ToString("yyyy-MM-dd")))));
+        activeChips.Add(("Prix max", s.PrixMax.Value.ToString("N2") + " DT", Q(("Libelle", s.Libelle), ("Livreur", s.Livreur), ("PrixMin", s.PrixMin?.ToString()), ("Statut", s.Statut?.ToString()), ("DateLivraison", s.DateLivraison?.ToString("yyyy-MM-dd")))));
     if (s.Statut.HasValue)
         activeChips.Add(("Statut", s.Statut.Value.ToString(), Q(("Libelle", s.Libelle), ("Livreur", s.Livreur), ("PrixMin", s.PrixMin?.ToString()), ("PrixMax", s.PrixMax?.ToString()), ("DateLivraison", s.DateLivraison?.ToString("yyyy-MM-dd")))));
     if (s.DateLivraison.HasValue)
@@ -80,11 +80,11 @@
                 </select>
             </div>
             <div class="col-md-3">
-                <label class="form-label">Prix min (DZD)</label>
+                <label class="form-label">Prix min (DT)</label>
                 <input type="number" step="0.01" min="0" name="PrixMin" value="@s.PrixMin" class="form-control" placeholder="0,00" />
             </div>
             <div class="col-md-3">
-                <label class="form-label">Prix max (DZD)</label>
+                <label class="form-label">Prix max (DT)</label>
                 <input type="number" step="0.01" min="0" name="PrixMax" value="@s.PrixMax" class="form-control" placeholder="∞" />
             </div>
             <div class="col-md-3">
@@ -144,7 +144,7 @@
                             <span class="@cls"><i class="bi bi-@icon me-1"></i>@lbl</span>
                         </td>
                         <td>@c.DateLivraison.ToString("dd/MM/yyyy")</td>
-                        <td class="text-success fw-bold">@c.Montant.ToString("N2") DZD</td>
+                        <td class="text-success fw-bold">@c.Montant.ToString("N2") DT</td>
                         <td>@(c.Livreur is null ? "—" : $"{c.Livreur.RaisonSocial} ({c.Livreur.CIN})")</td>
                         <td>
                             @{ var tel = PhoneOf(c.LivreurId); }
