@@ -26,7 +26,7 @@
         <table class="table table-hover mb-0" id="dataTable">
             <thead>
                 <tr>
-                    <th>#</th><th>Libellé</th><th>Statut</th><th>Date livraison</th>
+                    <th>#</th><th>Photo</th><th>Libellé</th><th>Statut</th><th>Date livraison</th>
                     <th>Montant</th><th>Client</th><th>Livreur</th><th class="text-center">Actions</th>
                 </tr>
             </thead>
@@ -35,6 +35,17 @@
                 {
                     <tr>
                         <td class="text-muted fw-bold">@item.Id</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.ImageUrl))
+                            {
+                                <img src="@item.ImageUrl" alt="Photo"
+                                     style="width:42px;height:42px;object-fit:cover;border-radius:6px;border:1px solid #dee2e6;" />
+                            }
+                            else
+                            {
+                                <span class="text-muted"><i class="bi bi-image" style="font-size:1.5rem;"></i></span>
+                            }
+                        </td>
                         <td class="fw-semibold">@(item.Libelle ?? "—")</td>
                         <td>
                             @{
@@ -72,7 +83,7 @@
                 @if (!Model.Any())
                 {
                     <tr>
-                        <td colspan="8">
+                        <td colspan="9">
                             <div class="empty-state">
                                 <div class="empty-icon"><i class="bi bi-box-seam"></i></div>
                                 <h6>Aucun colis</h6>

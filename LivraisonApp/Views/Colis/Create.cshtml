@@ -7,7 +7,7 @@
     <a class="btn btn-outline-secondary" asp-action="Index"><i class="bi bi-arrow-left me-1"></i>Retour</a>
 </div>
 <div class="form-card">
-    <form asp-action="Create" method="post">
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
         <div asp-validation-summary="All" class="alert alert-danger py-2 mb-3"></div>
         <div class="row g-3">
             <div class="col-md-6">
@@ -53,6 +53,14 @@
                 </select>
                 <span asp-validation-for="LivreurId" class="text-danger small"></span>
             </div>
+            <div class="col-12">
+                <label class="form-label"><i class="bi bi-image me-1"></i>Photo du colis</label>
+                <input type="file" name="imageFile" id="imageFile" class="form-control" accept="image/*" />
+                <span class="text-muted small">Formats acceptés : jpg, png, gif, webp — max 5 Mo</span>
+                <div class="mt-2" id="imagePreviewContainer" style="display:none;">
+                    <img id="imagePreview" src="" alt="Aperçu" style="max-height:200px;max-width:100%;border-radius:8px;border:1px solid #dee2e6;" />
+                </div>
+            </div>
         </div>
         <div class="mt-4 d-flex gap-2">
             <button class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Enregistrer</button>
@@ -60,4 +68,21 @@
         </div>
     </form>
 </div>
-@section Scripts { <partial name="_ValidationScriptsPartial" /> }
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('imageFile').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = ev => {
+                    document.getElementById('imagePreview').src = ev.target.result;
+                    document.getElementById('imagePreviewContainer').style.display = '';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                document.getElementById('imagePreviewContainer').style.display = 'none';
+            }
+        });
+    </script>
+}

@@ -28,6 +28,9 @@ public class Colis
     [MaxLength(200)]
     public string? Libelle { get; set; }
 
+    [MaxLength(300)]
+    public string? ImageUrl { get; set; }
+
     public StatutColis Statut { get; set; } = StatutColis.EnAttente;
 
     [Required]

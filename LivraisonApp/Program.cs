@@ -61,6 +61,17 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
+    // Add ImageUrl column if it doesn't exist yet
+    if (db.Database.ProviderName?.Contains("SqlServer") == true)
+    {
+        db.Database.ExecuteSqlRaw(
+            "IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'Colis') AND name = N'ImageUrl') " +
+            "ALTER TABLE [Colis] ADD [ImageUrl] NVARCHAR(300) NULL");
+    }
+    else
+    {
+        try { db.Database.ExecuteSqlRaw("ALTER TABLE \"Colis\" ADD COLUMN \"ImageUrl\" TEXT"); } catch { }
+    }
 }
 await SeedData.InitializeAsync(app.Services);
 
